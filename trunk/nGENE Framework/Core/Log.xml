@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="Logger.xsl"?>
+<RunTimeLog>
+<LogHeader>
+<Session>
+<Started>
+</Started>
+<Configuration>
+</Configuration>
+</Session>
+</LogHeader>
+<LogEvent id="1">
+<Type>3</Type>
+<TimeIndex>0 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::Init</Function>
+<LineNumber>30</LineNumber>
+<Message>Hello, world!</Message>
+</LogEvent>
+</RunTimeLog>

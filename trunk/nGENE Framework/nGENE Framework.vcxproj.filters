@@ -1,0 +1,491 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Scattering Tables">
+      <UniqueIdentifier>{6fec7551-472c-46f0-a046-6bd3681334fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scattering Tables\Preetham">
+      <UniqueIdentifier>{f05e9a23-1543-42e4-b18d-3fcff869bf71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Media">
+      <UniqueIdentifier>{f047450f-b8d0-4219-bf83-8dbd92772fa7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CrashDump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Framework.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameworkWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeClouds.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeDebugFrustum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeFur.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeLightning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeMeadow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeSky.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeVolumetric.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeWater.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PreethamScatter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReflectionStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SemanticFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsWindowWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowStage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CrashDump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Framework.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameworkWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeClouds.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeDebugFrustum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeFur.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeLightning.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeMeadow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeSky.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeVolumetric.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeWater.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleDeposition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PreethamScatter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReflectionStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SemanticFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsWindowWin32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowStage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="materialLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FrameworkWin32.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Logo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Scattering\ciexyz31_300_800.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\ciexyz31_350_800.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\K.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\Kg.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\Ko.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\Kwa.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\N21.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\neta.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="Scattering\Sol.table">
+      <Filter>Scattering Tables\Preetham</Filter>
+    </None>
+    <None Include="..\Shaders\adaptation.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\antialias.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\billboard.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\billboard.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\billboard_grass.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\billboard_grass.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\blackAndWhite.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\bloom.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\bright_pass_filter.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\cloud.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\cloud.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\cloud_density.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\debug_aabb.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\debug_aabb.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\depth.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\depth.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\depth2.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\diffuse.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\diffuse.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\diffuse_vs3.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\dof.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\dot_cel.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\dot_cel.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\downsample.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\downsample.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\downsample_hdr.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\edgeDetection.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\fog.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\fur.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\fur.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\fur_shadow.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\gaussian_blur.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\gaussian_blur.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\gui.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\gui.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\hblur.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\hblur.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\hblur2.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\hdr_composition.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\invert.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_directional.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_directional.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_merge.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_merge.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_normal.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_normal.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_point.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_point.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_position.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_position.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_spot.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\light_spot.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\lum_1st.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\lum_final.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\lum_iter.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\lum_scene.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\normal_map.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\normal_map.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\NormalMap.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\NormalMap.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\paralax_map.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\paralax_map.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\paralax_occl_map.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\paralax_occl_map.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\particle.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\particle.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\post.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\post_particle.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\preetham_haze.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\preetham_haze.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\save_lum.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\semanticFunctions.lua">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\sepia.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\ShaderConfig.txt">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\shadow_comp.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\shadow_map.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\shadow_map.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\shadow_pcf.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\shadow_pcf.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\sky.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\sky.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\ssao.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\ssao.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\ssao_comp.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\ssao_comp2.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\terrain.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\terrain.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\test.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\test.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\thermalVision.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\tilize.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\vblur.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\vblur2.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\water.psh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\water.vsh">
+      <Filter>Media</Filter>
+    </None>
+    <None Include="..\Shaders\wire.vsh">
+      <Filter>Media</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\Shaders\materialLib.xsd">
+      <Filter>Media</Filter>
+    </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuildStep Include="..\Shaders\default.lib">
+      <Filter>Media</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\Shaders\TechDemoMatLib.lib">
+      <Filter>Media</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\Shaders\VolcanicIslandMatLib.lib">
+      <Filter>Media</Filter>
+    </CustomBuildStep>
+  </ItemGroup>
+</Project>

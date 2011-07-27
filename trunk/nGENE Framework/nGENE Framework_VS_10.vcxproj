@@ -1,0 +1,345 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|Win32">
+      <Configuration>Final</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>nGENE Framework_VS_10</ProjectName>
+    <ProjectGuid>{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}</ProjectGuid>
+    <RootNamespace>nGENE Framework</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\bin\$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\bin\Final\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">$(Configuration)\</IntDir>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Programowanie\DirectX SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Programowanie\DirectX SDK\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Programowanie\DirectX SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Programowanie\DirectX SDK\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\Dependencies\Xerces\include;..\nGENE Proj;..\Dependencies\FastDelegate;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind\include;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>nGENE_d.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Framework_d.lib</OutputFile>
+      <AdditionalLibraryDirectories>../bin/debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalIncludeDirectories>..\Dependencies\Xerces\include;..\nGENE Proj;..\Dependencies\FastDelegate;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind\include;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32;BOOST_NO_EXCEPTION_STD_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>true</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <OpenMPSupport>false</OpenMPSupport>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Lib>
+      <AdditionalDependencies>nGENE.lib;Dbghelp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Framework.lib</OutputFile>
+      <AdditionalLibraryDirectories>../bin/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalIncludeDirectories>..\Dependencies\Xerces\include;..\nGENE Proj;..\Dependencies\PhysX\Foundation;..\Dependencies\PhysX\Physics;..\Dependencies\PhysX\PhysXLoader;..\Dependencies\PhysX\Cooking;..\Dependencies\FastDelegate;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind\include;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>nGENE.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Framework.lib</OutputFile>
+      <AdditionalLibraryDirectories>../lib/release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System.Data">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+    <Reference Include="System.Xml">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="CrashDump.cpp" />
+    <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="FrameworkWin32.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="NodeClouds.cpp" />
+    <ClCompile Include="NodeDebugFrustum.cpp" />
+    <ClCompile Include="NodeFur.cpp" />
+    <ClCompile Include="NodeLightning.cpp" />
+    <ClCompile Include="NodeMeadow.cpp" />
+    <ClCompile Include="NodeSky.cpp" />
+    <ClCompile Include="NodeVolumetric.cpp" />
+    <ClCompile Include="NodeWater.cpp" />
+    <ClCompile Include="PreethamScatter.cpp" />
+    <ClCompile Include="ReflectionStage.cpp" />
+    <ClCompile Include="SemanticFunctions.cpp" />
+    <ClCompile Include="SettingsWindow.cpp" />
+    <ClCompile Include="SettingsWindowWin32.cpp" />
+    <ClCompile Include="ShadowStage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="CrashDump.h" />
+    <ClInclude Include="Framework.h" />
+    <ClInclude Include="FrameworkWin32.h" />
+    <ClInclude Include="NodeClouds.h" />
+    <ClInclude Include="NodeDebugFrustum.h" />
+    <ClInclude Include="NodeFur.h" />
+    <ClInclude Include="NodeLightning.h" />
+    <ClInclude Include="NodeMeadow.h" />
+    <ClInclude Include="NodeSky.h" />
+    <ClInclude Include="NodeVolumetric.h" />
+    <ClInclude Include="NodeWater.h" />
+    <ClInclude Include="ParticleDeposition.h" />
+    <ClInclude Include="PreethamScatter.h" />
+    <ClInclude Include="ReflectionStage.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="SemanticFunctions.h" />
+    <ClInclude Include="SettingsWindow.h" />
+    <ClInclude Include="SettingsWindowWin32.h" />
+    <ClInclude Include="ShadowStage.h" />
+    <ClInclude Include="materialLib.h">
+      <DependentUpon>materialLib.xsd</DependentUpon>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FrameworkWin32.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Logo.bmp" />
+    <None Include="Scattering\ciexyz31_300_800.table" />
+    <None Include="Scattering\ciexyz31_350_800.table" />
+    <None Include="Scattering\K.table" />
+    <None Include="Scattering\Kg.table" />
+    <None Include="Scattering\Ko.table" />
+    <None Include="Scattering\Kwa.table" />
+    <None Include="Scattering\N21.table" />
+    <None Include="Scattering\neta.table" />
+    <None Include="Scattering\Sol.table" />
+    <None Include="..\Shaders\adaptation.psh" />
+    <None Include="..\Shaders\antialias.psh" />
+    <None Include="..\Shaders\billboard.psh" />
+    <None Include="..\Shaders\billboard.vsh" />
+    <None Include="..\Shaders\billboard_grass.psh" />
+    <None Include="..\Shaders\billboard_grass.vsh" />
+    <None Include="..\Shaders\blackAndWhite.psh" />
+    <None Include="..\Shaders\bloom.psh" />
+    <None Include="..\Shaders\bright_pass_filter.psh" />
+    <None Include="..\Shaders\cloud.psh" />
+    <None Include="..\Shaders\cloud.vsh" />
+    <None Include="..\Shaders\cloud_density.psh" />
+    <None Include="..\Shaders\debug_aabb.psh" />
+    <None Include="..\Shaders\debug_aabb.vsh" />
+    <None Include="..\Shaders\depth.psh" />
+    <None Include="..\Shaders\depth.vsh" />
+    <None Include="..\Shaders\depth2.vsh" />
+    <None Include="..\Shaders\diffuse.psh" />
+    <None Include="..\Shaders\diffuse.vsh" />
+    <None Include="..\Shaders\diffuse_vs3.vsh" />
+    <None Include="..\Shaders\dof.psh" />
+    <None Include="..\Shaders\dot_cel.psh" />
+    <None Include="..\Shaders\dot_cel.vsh" />
+    <None Include="..\Shaders\downsample.psh" />
+    <None Include="..\Shaders\downsample.vsh" />
+    <None Include="..\Shaders\downsample_hdr.psh" />
+    <None Include="..\Shaders\edgeDetection.psh" />
+    <None Include="..\Shaders\fog.psh" />
+    <None Include="..\Shaders\fur.psh" />
+    <None Include="..\Shaders\fur.vsh" />
+    <None Include="..\Shaders\fur_shadow.vsh" />
+    <None Include="..\Shaders\gaussian_blur.psh" />
+    <None Include="..\Shaders\gaussian_blur.vsh" />
+    <None Include="..\Shaders\gui.psh" />
+    <None Include="..\Shaders\gui.vsh" />
+    <None Include="..\Shaders\hblur.psh" />
+    <None Include="..\Shaders\hblur.vsh" />
+    <None Include="..\Shaders\hblur2.psh" />
+    <None Include="..\Shaders\hdr_composition.psh" />
+    <None Include="..\Shaders\invert.psh" />
+    <None Include="..\Shaders\light_directional.psh" />
+    <None Include="..\Shaders\light_directional.vsh" />
+    <None Include="..\Shaders\light_merge.psh" />
+    <None Include="..\Shaders\light_merge.vsh" />
+    <None Include="..\Shaders\light_normal.psh" />
+    <None Include="..\Shaders\light_normal.vsh" />
+    <None Include="..\Shaders\light_point.psh" />
+    <None Include="..\Shaders\light_point.vsh" />
+    <None Include="..\Shaders\light_position.psh" />
+    <None Include="..\Shaders\light_position.vsh" />
+    <None Include="..\Shaders\light_spot.psh" />
+    <None Include="..\Shaders\light_spot.vsh" />
+    <None Include="..\Shaders\lum_1st.psh" />
+    <None Include="..\Shaders\lum_final.psh" />
+    <None Include="..\Shaders\lum_iter.psh" />
+    <None Include="..\Shaders\lum_scene.psh" />
+    <None Include="..\Shaders\normal_map.psh" />
+    <None Include="..\Shaders\normal_map.vsh" />
+    <None Include="..\Shaders\NormalMap.psh" />
+    <None Include="..\Shaders\NormalMap.vsh" />
+    <None Include="..\Shaders\paralax_map.psh" />
+    <None Include="..\Shaders\paralax_map.vsh" />
+    <None Include="..\Shaders\paralax_occl_map.psh" />
+    <None Include="..\Shaders\paralax_occl_map.vsh" />
+    <None Include="..\Shaders\particle.psh" />
+    <None Include="..\Shaders\particle.vsh" />
+    <None Include="..\Shaders\post.psh" />
+    <None Include="..\Shaders\post_particle.vsh" />
+    <None Include="..\Shaders\preetham_haze.psh" />
+    <None Include="..\Shaders\preetham_haze.vsh" />
+    <None Include="..\Shaders\save_lum.psh" />
+    <None Include="..\Shaders\semanticFunctions.lua" />
+    <None Include="..\Shaders\sepia.psh" />
+    <None Include="..\Shaders\ShaderConfig.txt" />
+    <None Include="..\Shaders\shadow_comp.psh" />
+    <None Include="..\Shaders\shadow_map.psh" />
+    <None Include="..\Shaders\shadow_map.vsh" />
+    <None Include="..\Shaders\shadow_pcf.psh" />
+    <None Include="..\Shaders\shadow_pcf.vsh" />
+    <None Include="..\Shaders\sky.psh" />
+    <None Include="..\Shaders\sky.vsh" />
+    <None Include="..\Shaders\ssao.psh" />
+    <None Include="..\Shaders\ssao.vsh" />
+    <None Include="..\Shaders\ssao_comp.psh" />
+    <None Include="..\Shaders\ssao_comp2.psh" />
+    <None Include="..\Shaders\terrain.psh" />
+    <None Include="..\Shaders\terrain.vsh" />
+    <None Include="..\Shaders\test.psh" />
+    <None Include="..\Shaders\test.vsh" />
+    <None Include="..\Shaders\thermalVision.psh" />
+    <None Include="..\Shaders\tilize.psh" />
+    <None Include="..\Shaders\vblur.psh" />
+    <None Include="..\Shaders\vblur2.psh" />
+    <None Include="..\Shaders\water.psh" />
+    <None Include="..\Shaders\water.vsh" />
+    <None Include="..\Shaders\wire.vsh" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuildStep Include="..\Shaders\default.lib">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\Shaders\TechDemoMatLib.lib">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuildStep>
+    <CustomBuildStep Include="..\Shaders\VolcanicIslandMatLib.lib">
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuildStep>
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="..\Shaders\materialLib.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </Xsd>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

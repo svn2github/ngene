@@ -1,0 +1,265 @@
+<!-- ******************************************************************************* -->
+<!-- ******************************************************************************* -->
+<!--                                                                                 -->
+<!--                                                                                 -->
+<!--          HTML MANAGER/VIEWER PAGE FOR XSL/XML LOG FILES                         -->
+<!--          WRITTEN BY JACK HOXLEY, MARCH 2005                                     -->
+<!--          ©2005 - All Rights Reserved                                            -->
+<!--          CONTACT jack.hoxley@f1cm.co.uk                                         -->
+<!--                                                                                 -->
+<!--                                                                                 -->
+<!-- ******************************************************************************* -->
+<!-- ******************************************************************************* -->
+
+<html>
+	<head>
+		<TITLE>nGENE Tech log File Viewer</TITLE>
+		<script language="javascript">
+		
+			//These are the global container for the currently selected options
+			var g_eventType		= 'all';
+			var g_nameSpace		= 'any';
+			var g_specificFile	= '';
+			
+			function setEventType( eventType )
+				{
+				
+					g_eventType = eventType;
+					generateLink( );
+					
+				}
+				
+			function setNameSpace( nameSpace )
+				{
+				
+					g_nameSpace = nameSpace;
+					generateLink( );
+					
+				}
+				
+			function setSpecificFile( fileName )
+				{
+					
+					g_specificFile = fileName;
+					if( g_specificFile == '' )
+						{
+							currentAdvFilter.innerHTML = "Not filtering entries based on a specific filename.";
+						}
+					else
+						{
+							currentAdvFilter.innerHTML = "Show only the entries originating from the file '<b>" + g_specificFile + "</b>'."
+						}
+					generateLink( );
+					
+				}
+			
+			function generateLink( )
+				{
+					var linkText = "<br>";
+					
+					linkText = linkText + "<a href=\"javascript:onViewLog( );\">";
+					
+						linkText = linkText + "<font size=\"2\" face=\"Arial\" color=\"#2060AA\">";
+						
+							linkText = linkText + "<i>";
+							
+								linkText = linkText + "Click here to generate a report showing events of type '<b>" + g_eventType + "</b>' ";
+								
+								if( g_specificFile == '' )
+									{
+										linkText = linkText + "from <b>all files</b> in the code namespace '<b>" + g_nameSpace + "</b>'.";
+									}
+								else
+									{
+										linkText = linkText + "from <b>'";
+										linkText = linkText + g_specificFile;
+										linkText = linkText + "'</b> in the code namespace '<b>" + g_nameSpace + "</b>'.";
+									}
+								
+							linkText = linkText + "</i>";
+							
+						linkText = linkText + "</font>";
+					
+					linkText = linkText + "</a>";
+					
+					linkText = linkText + "<br>";
+					
+					linkText = linkText + "<br>";
+					
+					//Commit the compiled string to the display
+					eventTypeLabel.innerHTML = linkText;
+					
+				}
+
+			function onViewLog( )
+			{
+				
+				var xmlDoc = new ActiveXObject( "MSXML2.DOMDocument.3.0" );
+				var xslDoc = new ActiveXObject( "MSXML2.FreeThreadedDOMDocument.3.0" );
+				var xslTemplate = new ActiveXObject( "MSXML2.XSLTemplate.3.0" );
+
+				var xslProcessor;
+
+				xmlDoc.async="false";
+				xmlDoc.load( 'Log.xml' );
+
+				xslDoc.async="false";
+				xslDoc.load( 'Logger.xsl' );
+
+				xslTemplate.stylesheet = xslDoc;
+
+				xslProcessor = xslTemplate.createProcessor( );
+				xslProcessor.input = xmlDoc;
+				xslProcessor.addParameter( "eventType",		g_eventType );
+				xslProcessor.addParameter( "nameSpace",		g_nameSpace );
+				xslProcessor.addParameter( "specificFile",	g_specificFile );
+				xslProcessor.transform();
+
+				logview.innerHTML = xslProcessor.output;
+
+			}
+
+		</script>
+	</head>
+	<body bgcolor="#000000" vlink="#0000ff" alink="#0000ff" link="#0000ff" onLoad="javascript:onViewLog( ); javascript:generateLink( ); javascript:setSpecificFile( '' );">
+	    <div align="center">
+	      <p><img src="Logo.jpg" align="center"><br>
+          </p>
+	      <p><br>
+	        <font size="3" face="Arial" color="#2060AA">
+	          <b>
+	            <u>
+	              Filter logged messages:				</u> </b> </font>
+	        <br>
+	        <br>
+          </p>
+    </div>
+	    <table border="0" align="center" cellpadding="1" cellspacing="0">
+          <!-- =============================================================== -->
+          <!--              MESSAGE TYPE IDENTIFICATION ROW                    -->
+          <!-- =============================================================== -->
+          <tr>
+            <td width="100" bgcolor="#000000"><font size="1" face="Arial" color="#FFFFFF"> <b> Types: </b> </font> </td>
+            <td width="77" bgcolor="#EEEEEE"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Unknown');">Unknown</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#FF0000"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Fatal Error');">Error</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#FF8080"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Error');">Error</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#FFCC00"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Warning');">Warning</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#FF8020"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Game Message');">Message</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#8080FF"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Event');">Event</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#FFFF80"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Debug');">Debug</a>
+              </center>
+            </font> </td>
+            <td width="77" bgcolor="#80FF80"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setEventType('Comment');">Comment</a>
+              </center>
+            </font> </td>
+          </tr>
+          <!-- =============================================================== -->
+          <!--                    CATEGORY SELECTION ROW                       -->
+          <!-- =============================================================== -->
+          <tr bgcolor="#000000">
+            <td width="100"><font size="1" face="Arial" color="#FFFFFF"> <b> Categories: </b> </font> </td>
+            <td width="77">              <center>
+              <font color="#FFFFFF" size="1" face="Arial"><a href="javascript:setEventType('all');">All</a>                </font>
+            </center> </td>
+            <td width="77">              <center>
+              <font color="#000000" size="1" face="Arial"><a href="javascript:setEventType('tracking');">Tracking</a>                </font>
+            </center> </td>
+            <td width="77">              <center>
+              <font color="#000000" size="1" face="Arial"><a href="javascript:setEventType('failures');">Failures</a>                </font>
+            </center> </td>
+            <!-- Dummy place holder cells -->
+            <td width="77"><font size="1" face="Arial" color="#FFFFFF"> </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#FFFFFF"> </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#FFFFFF"> </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#FFFFFF"> </font> </td>
+            <!-- End dummy place holder cells -->
+          </tr>
+          <!-- =============================================================== -->
+          <!--                     NAMESPACE FILTER ROW                        -->
+          <!-- =============================================================== -->
+          <tr bgcolor="#000000">
+            <td width="100"><font color="#FFFFFF" size="1" face="Arial"> <b> Namespace: </b> </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('default');">None</a>
+              </center>
+            </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('any');">Any</a>
+              </center>
+            </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('Engines');">Engines</a>
+              </center>
+            </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('Game');">Game</a>
+              </center>
+            </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('UI');">GUI</a>
+              </center>
+            </font> </td>
+            <td width="77"><font size="1" face="Arial" color="#000000">
+              <center>
+                <a href="javascript:setNameSpace('Vars');">Variables</a>
+              </center>
+            </font> </td>
+            <!-- Dummy cell -->
+            <td width="77"><font size="1" face="Arial" color="#000000"> </font> </td>
+			<td width="77"><font size="1" face="Arial" color="#000000"> </font> </td>
+          </tr>
+        </table>
+	    <!-- =============================================================== -->
+        <!--                     ADVANCED FILTERING                          -->
+        <!-- =============================================================== -->
+        <br>
+		<font size="2" face="Arial" color="#000000">
+			<b>
+				Advanced options:			</b>		</font>
+	<font size="1" face="Arial" color="#000000">		</font>
+	<div id="currentAdvFilter"></div>
+	<font color="#FFFFFF" size="1" face="Arial">[<a href="javascript:setSpecificFile( prompt('Please enter the filename - please note that the search will be CASE SENSITIVE.', 'main.cpp') );">Change</a>] [<a href="javascript:setSpecificFile( '' );">Reset</a>]    </font>
+		
+		<font color="#FFFFFF">
+		<!-- =============================================================== -->
+		<!--                     ACTUAL CONTENT OUTPUT                       -->
+		<!-- =============================================================== -->
+		</font>
+		<div id="eventTypeLabel"></div>
+		<hr>
+		<div id="logview"></div>
+	</body>
+</html>
