@@ -1,0 +1,224 @@
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 eyeVec: TEXCOORD1;
+	float3 lightDir: TEXCOORD2;
+};
+
+
+float lightIntensity = 1.0f;
+
+float3 a_C1plusC2 = {0.00185746, 0.00187312, 0.00297412};
+const float2 a_alpha = {0.00083331810, 0.00011360016};
+float3 a_betaMie = {0.0016386401, 0.0016619208, 0.0024636989};
+float3 a_betaRay = {0.00025196010, 0.00024477459, 0.00056073267};
+const float2 a_bins = {5.0f, 6.0f};
+const float3x3 a_colorConvMat = float3x3(float3(3.240479,-1.53715,-0.498535),
+								   float3(-0.969256,1.875992,0.041556),
+								   float3(0.055648,-0.204043,1.0573109));
+float3 a_constants = {0.98019904, 0.99727732, 0.0069999998};
+
+float3 a_S0Mie[36] =
+{
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.67997187, 0.71002281, 1.3353338},
+	{0.79767120, 0.83325070, 1.5412264},
+	{0.48834136, 0.51047587, 1.0476468},
+	{0.32189173, 0.33712050, 0.76697147},
+	{0.32189170, 0.33712047, 0.76697171},
+	{0.48834139, 0.51047581, 1.0476468},
+	{0.79767120, 0.83325070, 1.5412264},
+	{0.37899160, 0.39727467, 0.85201299},
+	{0.29177484, 0.30664074, 0.69962519},
+	{0.22477831, 0.23737633, 0.57661086},
+	{0.22477834, 0.23737627, 0.57661092},
+	{0.29177478, 0.30664080, 0.69962543},
+	{0.37899160, 0.39727467, 0.85201299},
+	{0.16157833, 0.16969445, 0.36885703},
+	{0.14294857, 0.15042324, 0.33519843},
+	{0.12773457, 0.13480328, 0.30610952},
+	{0.12773457, 0.13480327, 0.30610943},
+	{0.14294858, 0.15042326, 0.33519834},
+	{0.16157833, 0.16969445, 0.36885703},
+	{0.085663550, 0.089869857, 0.19123846},
+	{0.085116833, 0.089327261, 0.18951118},
+	{0.089170203, 0.093598753, 0.19464654},
+	{0.089170188, 0.093598738, 0.19464654},
+	{0.085116856, 0.089327276, 0.18951121},
+	{0.085663550, 0.089869857, 0.19123846},
+	{0.080294088, 0.084114850, 0.17045103},
+	{0.080294088, 0.084114850, 0.17045103},
+	{0.080294088, 0.084114850, 0.17045103},
+	{0.080294088, 0.084114850, 0.17045103},
+	{0.080294088, 0.084114850, 0.17045103},
+	{0.080294088, 0.084114850, 0.17045103}
+};
+
+float3 a_S0Ray[36] =
+{
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0018349793, 0.0018448787, 0.0058840113},
+	{0.0017070699, 0.0017170142, 0.0055732639},
+	{0.0015436020, 0.0015536812, 0.0051739006},
+	{0.0015436021, 0.0015536813, 0.0051739011},
+	{0.0017070702, 0.0017170144, 0.0055732629},
+	{0.0018349793, 0.0018448787, 0.0058840113},
+	{0.0016324882, 0.0016439958, 0.0054324255},
+	{0.0015145356, 0.0015260120, 0.0051478613},
+	{0.0014375482, 0.0014491444, 0.0049582180},
+	{0.0014375480, 0.0014491447, 0.0049582194},
+	{0.0015145356, 0.0015260119, 0.0051478622},
+	{0.0016324882, 0.0016439958, 0.0054324255},
+	{0.0014384717, 0.0014501094, 0.0049592936},
+	{0.0014545815, 0.0014660979, 0.0050016562},
+	{0.0015945109, 0.0016060015, 0.0053409874},
+	{0.0015945109, 0.0016060015, 0.0053409897},
+	{0.0014545814, 0.0014660979, 0.0050016548},
+	{0.0014384717, 0.0014501094, 0.0049592936},
+	{0.0015210543, 0.0015311646, 0.0051184692},
+	{0.0016100621, 0.0016200714, 0.0053366991},
+	{0.0017975727, 0.0018074822, 0.0057932390},
+	{0.0017975726, 0.0018074817, 0.0057932399},
+	{0.0016100621, 0.0016200714, 0.0053366995},
+	{0.0015210543, 0.0015311646, 0.0051184692},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725},
+	{0.0017661088, 0.0017751466, 0.0056899725} 
+};
+
+
+
+sampler diffuseTex: register(s0);
+sampler positionTex: register(s1);
+sampler normalTex: register(s2);
+
+
+
+float evalFunc(float a_B, float depth)
+{
+	float result;
+
+	if(abs(a_B * depth) < 0.01f)
+		result = depth;
+	else
+		result = (1.0f - exp(-a_B * depth)) / a_B;
+
+	return result;
+} 
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuse = tex2D(diffuseTex, IN.texCoord);
+	if((diffuse.x == 0.0f && diffuse.y == 0.0f && diffuse.z == 0.0f) || diffuse.w == 0.0f)
+	{
+		discard;
+		return 0;
+	}
+	
+	float4 normal = tex2D(normalTex, IN.texCoord);
+	
+	if(length(normal.xyz) < 0.01f)
+		return float4(diffuse.xyz * normal.w, 1.0f);
+	else
+	{		
+		const float epsilon = 1e-4;
+		float4 parameters = tex2D(positionTex, IN.texCoord);
+		float3 position = parameters.xyz;
+		float depth = length(position);
+		float3 direction = abs(normalize(position));
+		
+		float thetav = ((-direction.z + 1.0) / 2.0) * a_bins.x - epsilon;
+		thetav = max(thetav, 0.0f);
+
+		float3 dirTemp = normalize(direction);
+		
+		if(dirTemp.y < 0.0)
+		    dirTemp.x = (dirTemp.x + 2.0);
+		                                                       
+		float phiv = ((dirTemp.x + 1.0) / 4.0) * a_bins.x - epsilon;
+		phiv = (phiv, 0.0f);
+ 
+		int i = thetav;
+		int j = phiv;
+		float2 uv = float2(thetav - i, phiv - j);
+		
+		int4 indices = int4(i * a_bins.y + j, (i + 1) * a_bins.y + j,i * a_bins.y + j + 1,(i + 1) * a_bins.y + j + 1);
+					             
+		float2 B = a_alpha * direction.z;
+
+		float3 Fex = exp(-a_betaMie * a_constants.x * evalFunc(B.x, depth)) * exp(-a_betaRay * a_constants.y * evalFunc(B.y, depth));
+		float3 Extinction = mul(Fex, a_colorConvMat);
+		            				
+		float3 IMie = a_constants.x * ((1.0f - exp(-(B.x + a_C1plusC2) * depth)) / (B.x + a_C1plusC2));
+		float3 IRay = a_constants.y * ((1.0f - exp(-(B.y + a_C1plusC2) * depth)) / (B.y + a_C1plusC2));
+
+		float weight = (1.0f - uv.x) * (1.0f - uv.y);
+		float3 Lin = a_S0Mie[ indices.x ] * IMie;
+		float3 Lin2 = a_S0Ray[ indices.x ] * IRay;	
+		
+		weight = uv.x * (1.0f - uv.y);
+		float3 Lin3 = a_S0Mie[ indices.y ] * IMie;
+		float3 Lin4 = a_S0Ray[ indices.y ] * IRay;		
+		
+		weight = (1.0f - uv.x) * uv.y;
+		float3 Lin5 = a_S0Mie[ indices.z ] * IMie;
+		float3 Lin6 = a_S0Ray[ indices.z ] * IRay;		
+
+		weight = uv.x * uv.y;
+		float3 Lin7 = a_S0Mie[ indices.w ] * IMie;
+		/// @todo It should be uncommented but it causes artifacts		
+		/// There are no problems in my case. Have to check where these artifacts are.
+		float3 Lin8 = a_S0Ray[ indices.w ] * IRay;				
+		
+		Lin += Lin2;
+		Lin *= weight;
+		Lin3 += Lin4;
+		Lin3 *= weight;
+		Lin5 += Lin6;
+		Lin5 *= weight;
+		Lin7 += Lin8;
+		Lin7 *= weight;
+		
+		Lin += Lin7;
+		Lin += Lin5;
+		Lin += Lin3;
+		Lin *= a_constants.z;
+		float3 Inscatter = mul(Lin, a_colorConvMat);
+
+		float specular_intensity = parameters.w;
+		float kS = 0.0f;
+		float3 lightDir = normalize(IN.lightDir);
+		float kD = dot(normal, lightDir);
+		
+		if(specular_intensity < 0.01f)
+			kS = 0.0f;
+		else
+		{
+			float3 V = normalize(-IN.eyeVec);
+			float3 H = normalize(lightDir + V);
+			float shininess = 0.5f;
+			float e = shininess * 64;
+			
+			kS = saturate(kD) * specular_intensity * pow(saturate(dot(normal, H)), e) * sqrt((e + 1.0f) / 2.0f);
+		}
+		
+		float3 light = saturate(lightIntensity * kD);
+	
+		diffuse += float4(diffuse.xyz * normal.w * (saturate(kD) + 0.01f), 1.0f);
+		
+		return (float4((light + 0.01) * diffuse.xyz * Extinction + Inscatter + kS, 1.0f));
+	}
+}
