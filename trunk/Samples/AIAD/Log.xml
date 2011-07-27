@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="Logger.xsl"?>
+<RunTimeLog>
+<LogHeader>
+<Session>
+<Started>
+<Time>14:45:29</Time><Date>07.09.2010</Date></Started>
+<Configuration>
+<ProcessorType>Intel(R) Core(TM)2 Duo CPU     P8700  @ 2.53GHz</ProcessorType>
+<NumberOfProcessors>2</NumberOfProcessors>
+</Configuration>
+</Session>
+</LogHeader>
+</RunTimeLog>
