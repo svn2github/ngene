@@ -1,0 +1,51 @@
+// Another edge detection filter
+// Copyright (C) Wojciech Toman 2009
+// Info: authors of original file are Morgan McGuire and Kyle Whitson
+// 		 http://graphics.cs.williams.edu. The changes to their source
+//		 mainly include moving it from GLSL to HLSL.
+
+sampler diffuseMap: register(s0);
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+
+float threshold = 0.04f;
+
+const float3 BLACK = float3(0.0f, 0.0f, 0.0f);
+const float3 WHITE = float3(1.0f, 1.0f, 1.0f);
+
+const float2 RIGHT = float2(1.0f, 0.0f);
+const float2 DOWN = float2(0.0f, 1.0f);
+
+
+float3 detect(float3 diff)
+{
+    float derivative = sqrt(dot(diff, diff));
+    return (1.0 - smoothstep(-0.05, 0.05, derivative - threshold)) * float3(1.0,1.0,1.0);
+}
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 X = tex2D(diffuseMap, IN.texCoord.xy).rgb;
+    float3 A = tex2D(diffuseMap, IN.texCoord.xy + RIGHT * pixel_size).rgb;
+    float3 B = tex2D(diffuseMap, IN.texCoord.xy + DOWN * pixel_size).rgb;
+
+	// Use the median function to compute the median value of the r, g, and b components of the window. Set the original pixel
+	// to this shade.
+    float3 t1 = X - A;
+    float3 t2 = X - B;
+
+	float4 colour = 1.0f;
+    colour.rgb = detect(dot(t1, t1)) * detect(dot(t2, t2));
+
+	return colour;
+}
+

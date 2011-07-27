@@ -1,0 +1,27 @@
+// Debug aabb pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position : POSITION0;
+	float4 colour   : COLOR0;
+};
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	PS_OUTPUT OUT;
+	OUT.diffuse = IN.colour;
+	OUT.normal = float4(0.0f, 0.0f, 0.0f, 1.0f);
+	OUT.position = 0.0f;
+	
+	return OUT;
+}

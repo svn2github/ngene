@@ -1,0 +1,26 @@
+// Downsample pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler sceneTex: register(s0);
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord[4]: TEXCOORD0;
+};
+
+float threshold = 3.0f;
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	//float4 colour = tex2D(sceneTex, IN.texCoord[0]);
+	float4 colour = tex2D(sceneTex, IN.texCoord[0]) * 0.25;
+	colour += tex2D(sceneTex, IN.texCoord[1]) * 0.25;
+	colour += tex2D(sceneTex, IN.texCoord[2]) * 0.25;
+	colour += tex2D(sceneTex, IN.texCoord[3]) * 0.25;
+	
+	colour.xyz /= threshold;
+	
+	return float4(colour.x, colour.y, colour.z, colour.w);
+}

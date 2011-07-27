@@ -1,0 +1,35 @@
+// Billboard pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition:POSITION0;
+	float4 diffuse : COLOR0;
+	float2 texCoord: TEXCOORD0;
+	float3 normal  : TEXCOORD1;
+	float3 positionV: TEXCOORD2;
+};
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float4 diffuseMap = tex2D(diffuseTex, float2(IN.texCoord.x, IN.texCoord.y));
+	
+	PS_OUTPUT OUT;
+	OUT.diffuse = diffuseMap;
+	OUT.normal = float4(IN.normal, 0.0f);
+	OUT.position = float4(IN.positionV, 0.0f);
+//	OUT.position = float4(length(IN.positionV), 0.0f, 0.0f, 0.0f);
+	
+	return OUT;
+}

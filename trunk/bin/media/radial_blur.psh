@@ -1,0 +1,70 @@
+// Radial blur pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler difTexture: register(s0);
+
+
+float blur_distance = 1.0f;
+float blur_strength = 2.2f;
+
+/// Centre of the ffect
+float2 centre = {0.5f, 0.5f};
+
+/// Maximum radius for this effect - if distance from centre
+/// to the given pixel is higher the effect is not applied.
+//float radius = 2.0f;
+
+float samples[10] = 
+{
+	-0.08f,
+	-0.05f,
+	-0.03f,
+	-0.02f,
+	-0.01f,
+	0.01f,
+	0.02f,
+	0.03f,
+	0.05f,
+	0.08f
+};
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	// Calculate direction vector
+    float2 dir = centre - IN.texCoord; 
+    
+    // Calculate distance - the higher it is, the stronger
+    // the effect
+    float dist = length(dir);
+    
+    // Sample scene texture
+    float4 colour = tex2D(difTexture, IN.texCoord); 
+	
+    dir = normalize(dir);
+    
+    float4 sum = colour;
+    
+    // Sample scene texture 10 times
+    for(int i = 0; i < 10; i++)
+    {
+		sum += tex2D(difTexture, IN.texCoord + dir * samples[i] * blur_distance);
+    }
+    
+    // Normalize the result
+    sum *= 1.0f / 11.0f;
+    
+    
+    float t = saturate(dist * blur_strength);
+    colour = lerp(colour, sum, t);
+    
+    
+	return colour;
+}

@@ -1,0 +1,51 @@
+// Fur pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+float3 lightDir = float3(0.7f, -0.9f, 1.0f);
+float3 lightColour = float3(1.0f, 1.0f, 1.0f);
+
+sampler diffuseMap: register(s0);
+sampler patternMap: register(s1);
+sampler mask: register(s2);
+
+
+struct VertexOutput
+{
+	float4 hpos		: POSITION0;
+	float2 tex0	    : TEXCOORD0;
+	float2 tex1	    : TEXCOORD1;
+	float3 normal   : TEXCOORD2;
+	float3 positionV: TEXCOORD3;
+};
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float4 diffuse = tex2D(diffuseMap, IN.tex0);
+	float4 pattern = tex2D(patternMap, IN.tex1);
+	
+	float4 colour = pattern;
+	
+	float4 ambient = {0.3, 0.3, 0.3, 0.0};
+	ambient = ambient * colour;
+	
+	colour = saturate(ambient + colour * dot(normalize(-lightDir), normalize(IN.normal)));
+	
+	colour.rgb *= lightColour;	
+	colour.a = diffuse.a * tex2D(mask, IN.tex1).r;
+	
+	
+	PS_OUTPUT OUT;
+	OUT.diffuse = colour;
+	OUT.normal = float4(IN.normal, 0.0f);
+	OUT.position = float4(IN.positionV, 0.0f);
+	
+	return OUT;
+}

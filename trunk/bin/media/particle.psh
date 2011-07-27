@@ -1,0 +1,61 @@
+// Soft-Particle pixel shader
+// Copyright (C) Wojciech Toman 2007
+
+sampler diffuseTex: register(s0);
+sampler depthTex: register(s1);
+sampler maskTex: register(s2);
+
+
+/// Particles density
+float density = 1.0f;
+
+/// Frustum near clipping plane
+float near = 0.1f;
+
+/// Z-value at which particles start to fade away.
+/// nearThreshold is added to the near value when testing.
+float nearThreshold = 0.1f;
+
+
+struct VertexOutput
+{
+	float4 hPosition:POSITION0;
+	float4 diffuse:  COLOR0;
+	float4 texCoord: TEXCOORD0;
+	float4 positionV:TEXCOORD1;
+	float4 position: TEXCOORD2;
+	float  radius:   TEXCOORD3;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuseMap = tex2D(diffuseTex, IN.texCoord.xy);
+	float mask = tex2D(maskTex, IN.texCoord.xy).r;
+	float4 colour = float4(diffuseMap.rgb * IN.diffuse.rgb, mask);
+	
+	float2 screenPos = (IN.position.xy / IN.position.w * 0.5f + 0.5f);
+	screenPos.y = 1.0f - screenPos.y;
+
+	float particleDepth = IN.positionV.z - IN.radius * 2.0f;
+	particleDepth /= IN.positionV.w;
+	float depthFade = 1.0f;
+	
+	
+	float sceneDepth = tex2D(depthTex, screenPos).z;
+ 	float depthDiff = sceneDepth - particleDepth;
+ 	if(depthDiff < 0.0f)
+ 	{
+ 		discard;
+ 		return 0.0f;
+ 	}
+	
+	
+	depthDiff += 0.001f;
+	colour.a *= mask * density * saturate(depthDiff) * IN.diffuse.a;
+	float nearLimit = nearThreshold + near;
+	if(IN.positionV.z <= nearLimit)
+		colour.a = lerp(0.0f, colour.a, (IN.positionV.z - near) / nearThreshold);
+
+	return colour;
+}

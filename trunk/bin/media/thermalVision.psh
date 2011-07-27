@@ -1,0 +1,41 @@
+// Thermal vision pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler sceneTex: register(s0);
+sampler thermalTex: register(s1);
+sampler positionTex: register(s2);
+sampler normalTex: register(s3);
+sampler noiseTex: register(s4);
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+
+float timer = 0.0f;
+float noiseScale = 0.4f;
+float3 cameraPos;
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float4 normal = tex2D(normalTex, IN.texCoord);
+    float3 scene = dot(tex2D(sceneTex, IN.texCoord).rgb, float3(0.3f, 0.59f, 0.11f));
+
+    float3 result = 0;
+    
+	float3 position = tex2D(positionTex, IN.texCoord).xyz;
+    
+	float3 eyeDir = float3(cameraPos - position);
+	
+	float radiation = normal.w * 0.005f;
+	if(length(normal.xyz) > 0.1f)
+		radiation += dot(normalize(eyeDir), normalize(normal.xyz));
+
+	result.xyz = (tex2D(thermalTex, scene.r * saturate(radiation)) + tex2D(noiseTex, noiseScale * (IN.texCoord + sin(timer / 100.0f)))).xyz;
+
+    return float4(result, 1.0f);
+}

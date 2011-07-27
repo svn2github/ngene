@@ -1,0 +1,72 @@
+// Cloud density pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s1);
+sampler diffuseTexDest: register(s2);
+
+float timer = 0.0f;
+
+/** Sky cloudiness level:
+	1.0 - no clouds
+	0.0 - sky is totally clouded
+*/
+float cloudCover = 0.45f;
+
+/** The higher the value, the more "delicate" clouds
+	will be.
+*/ 
+float cloudSharpness = 0.94f;
+
+float textureScaling = 1.0f;
+
+
+float2 weights[11] =
+{
+	{1.0f, 0.5f},
+	{2.0f, 0.25f},
+	{4.0f, 0.125f},
+	{8.0f, 0.0625f},
+	{16.0f,0.03125f},
+	{32.0f,0.015625f},
+	{64.0f,0.0078125f},
+	{128.0f,0.00390625f},
+	{256.0f,0.001953125f},
+	{512.0f,0.0009765625f},
+	{1024.0f,0.00048828125f}
+};
+
+static const int iterationsNum = 8;
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 normal: TEXCOORD1;
+};
+
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+};
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float color = 0.0f;
+	for(int i = 0; i < iterationsNum; i++)
+	{
+		float mult = weights[i].x * textureScaling;
+		color += lerp(tex2D(diffuseTex, IN.texCoord * mult).a,
+					  tex2D(diffuseTexDest, IN.texCoord * mult).a,
+					  timer) * weights[i].y;
+	}
+
+	PS_OUTPUT OUT;
+	color = max(color - cloudCover, 0.0f);
+	color = 1.0f - pow(abs(cloudSharpness), color * 255.0f);
+	OUT.diffuse = saturate(color);
+	
+	return OUT;
+}

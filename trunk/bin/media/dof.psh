@@ -1,0 +1,47 @@
+// Depth of Field Post-processing shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler blurTex: register(s0);
+sampler sceneTex: register(s1);
+sampler depthTex: register(s2);
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+float weight = 1.5f;
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float near = 2.5f;
+float far = 10.0f;
+
+/// Ranges [0; 1]
+float focalScale = 1.0f;
+float focus = 5.0f;
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float depth = length(tex2D(depthTex, IN.texCoord).xyz);
+	float4 scene= tex2D(sceneTex, IN.texCoord);
+	float4 blur = tex2D(blurTex, IN.texCoord + 3 * pixel_size);
+	
+	float factor = 0.0f;
+	if(depth < focus)
+	{
+		factor = (focus - depth) / (focus - near);
+	}
+	else if(depth > focus)
+	{
+		factor = (depth - focus) / (far - focus);
+		factor = clamp(factor, 0.0f, focalScale);
+	}
+	
+	float4 result = float4(lerp(scene.xyz, blur.xyz, factor), 1.0f);
+	
+	return result;
+}

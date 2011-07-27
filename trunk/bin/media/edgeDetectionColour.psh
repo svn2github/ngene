@@ -1,0 +1,58 @@
+// Edge detection (Sobel filter) filter pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float2 kernel[9] =
+{
+    { 0.0f,  0.0f},
+    { 1.0f,  0.0f},
+    { 1.0f,  1.0f},
+    { 1.0f, -1.0f},
+    {-1.0f,  0.0f},
+    {-1.0f,  1.0f},
+    {-1.0f, -1.0f},
+    { 0.0f, -1.0f},
+    { 0.0f,  1.0f}
+};
+
+
+float strength = 1.0f;
+float threshold = 0.05f;
+
+float2 pixelSize = {1.0f / 800.0f, 1.0f / 600.0f};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float4 diffuse = tex2D(sceneTex, IN.texCoord);
+	
+	float4 cols[9];
+	int i;
+	for(i = 0; i < 9; i++)
+	{
+		cols[i] = tex2D(sceneTex, IN.texCoord + kernel[i] * pixelSize);
+	}
+	
+	float lums[9];
+	for(i = 0; i < 9; ++i)
+	{
+		lums[i] = dot(cols[i].rgb, float3(0.30f, 0.59f, 0.11f));
+	}
+	
+	
+	float x = lums[2] + lums[8] + 2.0f * lums[5] - lums[0] - 2.0f * lums[3] - lums[6];
+	float y = lums[6] + 2.0f *lums[7] + lums[8] - lums[0] - 2.0f * lums[1] - lums[2];
+	
+	float edge = (x * x + y * y < threshold) ? 0.0f : 1.0f;
+	
+	return float4(edge, edge, edge, 1.0f);
+}

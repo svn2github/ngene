@@ -1,0 +1,9 @@
+The more enemies you kill in a row, the higher the score multiplier.
+All weapons but a Simple Rifle have limited ammo - remember of that.
+The further you go, the more enemies you encounter.
+Try to collect power-ups. You can find new weapons, extra points or health.
+The most powerful weapon of the game is Lightning, you can't miss with that!
+Avoid colliding with enemies, you can destroy them but you loose health too.
+Shield power-up can be used as a weapon, you can hit enemies without penalty.
+Enemies can use different weapons.
+When close to death you will hear heart beating and screen will go black&white.

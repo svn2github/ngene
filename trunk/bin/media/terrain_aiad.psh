@@ -1,0 +1,142 @@
+// Terrain pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseMap: register(s0);
+sampler diffuseMap2: register(s1);
+sampler diffuseMap3: register(s2);
+sampler diffuseMap4: register(s3);
+
+sampler normalMap: register(s4);
+
+
+float specular_intensity = 0.0f;
+float emissive = 0.0f;
+
+float4x4 matViewIT;
+
+float2 heights[4] =
+{
+	{0.0f, 5.0f},
+	{0.0f, 12.0f},
+	{4.0f, 10.0f},
+	{8.0f, 20.0f}
+};
+
+float4 slopes = {0.0f, 0.1f, 0.2, 0.5f};
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 position   : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+    float3 normal	  : TEXCOORD1;
+    float3 V		  : TEXCOORD2;
+    float3 positionV  : TEXCOORD3;
+    float altitude	  : TEXCOORD4;
+};
+
+float3x3 invert_3x3(float3x3 mat)
+{
+	float det = determinant(mat);
+	float3x3 T = transpose(mat);
+	return float3x3(cross(T[1], T[2]),
+					cross(T[2], T[0]),
+					cross(T[0], T[1])) / det;
+}
+
+float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
+{
+	float3 dp1 = ddx(P);
+	float3 dp2 = ddy(P);
+	float2 duv1 = ddx(UV);
+	float2 duv2 = ddy(UV);
+	
+	float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
+	float3x3 inverseM = invert_3x3(M);
+	float3 T = mul(inverseM, float3(duv1.x, duv2.x, 0.0f));
+	float3 B = mul(inverseM, float3(duv1.y, duv2.y, 0.0f));
+	
+	float maxLength = max(length(T), length(B));
+	return float3x3(T / maxLength, B / maxLength, N);
+}
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+	float4 material: COLOR3;
+};
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float4 color = 0.0f;
+	float4 tex1 = 0.0f;
+	float4 tex2 = 0.0f;
+	float4 tex3 = 0.0f;
+	float4 tex4 = 0.0f;
+	float2 texCoord = IN.texCoord;
+	
+	float4 factors = 0.0f;
+	float altitude = IN.altitude;
+	
+	if(altitude > heights[0].x && altitude < heights[0].y)
+	{
+		float halfAlt = heights[0].x + 0.5f * (heights[0].y - heights[0].x);
+		factors.x = altitude < halfAlt ? smoothstep(heights[0].x, halfAlt, altitude) : 1.0f - smoothstep(halfAlt, heights[0].y, altitude);
+	}
+	if(altitude > heights[1].x && altitude < heights[1].y)
+	{
+		float halfAlt = heights[1].x + 0.5f * (heights[1].y - heights[1].x);
+		factors.y = altitude < halfAlt ? smoothstep(heights[1].x, halfAlt, altitude) : 1.0f - smoothstep(halfAlt, heights[1].y, altitude);
+	}
+	if(altitude > heights[2].x && altitude < heights[2].y)
+	{
+		float halfAlt = heights[2].x + 0.5f * (heights[2].y - heights[2].x);
+		factors.z = altitude < halfAlt ? smoothstep(heights[2].x, halfAlt, altitude) : 1.0f - smoothstep(halfAlt, heights[2].y, altitude);
+	}
+	if(altitude > heights[3].x && altitude < heights[3].y)
+	{
+		float halfAlt = heights[3].x + 0.5f * (heights[3].y - heights[3].x);
+		factors.w = altitude < halfAlt ? smoothstep(heights[3].x, halfAlt, altitude) : 1.0f - smoothstep(halfAlt, heights[3].y, altitude);
+	}
+	
+	if(length(factors) < 0.01f)
+	{
+		factors = float4(1.0f, 0.0f, 0.0f, 0.0f);
+	}
+	
+	factors = saturate(factors);
+	if(factors.x >= 0.01f)
+		tex1 = tex2D(diffuseMap, texCoord);
+	if(factors.y >= 0.01f)
+		tex2 = tex2D(diffuseMap2, texCoord);
+	if(factors.z >= 0.01f)
+		tex3 = tex2D(diffuseMap3, texCoord);
+	if(factors.w >= 0.01f)
+		tex4 = tex2D(diffuseMap4, texCoord);
+	
+	float slope = saturate(1.0f - dot(normalize(IN.normal), float3(0.0f, 1.0f, 0.0f)));
+	float4 factors2 = slope >= slopes ? 1.0f : lerp(0.0f, 1.0f, slope / slopes);
+	if(length(factors * factors2) > 0.0f)
+		factors *= factors2;
+	
+	factors = normalize(factors);
+	color = tex1 * factors.x + tex2 * factors.y + tex3 * factors.z + tex4 * factors.w;
+	
+	
+	float3x3 tangentFrame = compute_tangent_frame(IN.normal, IN.V, IN.texCoord);
+	float3 normal = 2.0f * tex2D(normalMap, texCoord * 0.5f).xyz - 1.0f;
+	normal = normalize(mul(normal, tangentFrame).xyz);
+	normal = mul(float4(normal, 0.0f), matViewIT).xyz;
+	//normal.y *= 2.0f;
+	normal = normalize(normal);
+
+	PS_OUTPUT OUT;
+	OUT.diffuse = color;
+	OUT.normal.rgba = float4(normal, emissive);
+	OUT.position = float4(IN.positionV, specular_intensity);
+	OUT.material = 0.0f;
+	
+	return OUT;
+}

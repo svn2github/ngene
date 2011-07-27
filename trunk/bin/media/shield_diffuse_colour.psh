@@ -1,0 +1,59 @@
+// Shield pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler diffuseMap: register(s0);
+sampler normalMap: register(s1);
+
+
+float4 colour = {1.0f, 1.0f, 1.0f, 1.0f};
+
+float4x4 matViewIT;
+
+// Emissive factor for HDR rendering
+float emissive = 0.0f;
+
+// ID of the material
+float materialID = 0;
+
+float shininess = 0.5f;
+float specular_intensity = 0.16f;
+
+// Direction of the light
+float3 light_dir = {0.0f, -0.7f, -1.0f};
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position   : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+	float3 normal	  : TEXCOORD1;
+	float3 V		  : TEXCOORD2;
+	float3 positionV  : TEXCOORD3;
+};
+
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float3 normalWorld = IN.normal;
+	
+	float3 dir = normalize(IN.positionV.xyz);
+	dir = normalize(IN.V);
+	float dp = abs(dot(dir, -normalWorld));
+	
+	float4 result = colour;
+	result.a = lerp(colour.a, 0.0f, dp);
+	
+	float3 lightDir = normalize(light_dir);
+	float3 H = normalize(-lightDir + dir);
+	
+	float e = shininess * 64;
+	float kD = saturate(dot(normalWorld, -lightDir)); 
+	float kS = kD * specular_intensity * pow( saturate( dot(normalWorld, H) ), e ) * sqrt( ( e + 1 ) * 0.5f );
+	
+	result.xyz *= saturate(dot(lightDir, -normalWorld) + 0.5f);
+	result += kS * colour.a;
+	
+	return result;
+}

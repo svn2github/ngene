@@ -1,0 +1,28 @@
+// Glow pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler diffuseTex: register(s0);
+sampler sceneTex: register(s1);
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+float weight = 1.5f;
+
+float SceneIntensity = 0.5f;
+float GlowIntensity = 0.5f;
+float HighlightIntensity = 0.5f;
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 scene = tex2D(sceneTex, IN.texCoord);
+	float4 bloom = tex2D(diffuseTex, IN.texCoord);
+	
+	return saturate(scene + GlowIntensity * bloom + HighlightIntensity * bloom.a);
+}

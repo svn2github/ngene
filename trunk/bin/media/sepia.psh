@@ -1,0 +1,30 @@
+// Sepia filter pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+float desaturation = 0.5f;
+float tone = 1.0f;
+float3 lightColor = {1.0f, 0.9f, 0.5f};
+float3 darkColor = {0.2f, 0.05f, 0.0f};
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float3 scene = lightColor * tex2D(sceneTex, IN.texCoord).rgb;
+	float3 grayTrans = float3(0.3f, 0.59f, 0.11f);
+	
+	float3 grayScene = dot(scene, grayTrans);
+	
+	float3 muted = lerp(scene, grayScene.x, desaturation);
+	float3 sepia = lerp(darkColor, lightColor, grayScene);
+	
+	return float4(lerp(muted, sepia, tone), 1.0f);
+}

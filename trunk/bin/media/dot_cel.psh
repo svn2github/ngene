@@ -1,0 +1,62 @@
+// Cel shading pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler normalMap: register(s0);
+
+
+float specular_intensity = 0.0f;
+float2 texCoordMult = {1.0f, 1.0f};
+
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 position   : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+    float3 normal	  : TEXCOORD1;
+    float3 positionV  : TEXCOORD2;
+    float scale		  : TEXCOORD3;
+    float3 V		  : TEXCOORD4;
+};
+
+float shades = 5;
+float dark_shades = 2;
+float4 base_color = {0.0f, 1.0f, 0.0f, 1.0f};
+float4 edge_color = {0.0f, 0.0f, 0.1f, 1.0f};
+
+// ID of the material
+float materialID = 0;
+
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+	float4 material: COLOR3;
+};
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float2 texCoord = texCoordMult * IN.texCoord;
+	float4 color;
+	int scale = floor(IN.scale * shades);
+	IN.scale = scale / shades;
+	
+	if(IN.scale < dark_shades / shades)
+	{
+		color = edge_color;
+	}
+	else
+	{
+		color = base_color * IN.scale + base_color / shades;
+	}
+
+	PS_OUTPUT OUT;
+	OUT.diffuse = color;
+	OUT.normal.rgba = float4(IN.normal, 0.0f);
+	OUT.position = float4(IN.positionV, specular_intensity);
+	OUT.material = float4(materialID, 0.0f, 0.0f, 0.0f);
+	
+	return OUT;
+}

@@ -1,0 +1,38 @@
+// HDR composition pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+sampler bloomTex: register(s1);
+sampler avgLumTex: register(s2);
+sampler lumTex: register(s3);
+sampler positionTex: register(s4);
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+/// Strength of bloom effect.
+float bloomStrength = 1.0f;
+
+/// Tonemapping scale factor
+float tonemapScale = 0.22f;
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 bloom = tex2D(bloomTex, IN.texCoord).xyz;
+ 
+	float3 color = tex2D(sceneTex, IN.texCoord).xyz;
+	color += bloom * bloomStrength;
+	
+	float lum = tex2D(lumTex, IN.texCoord).x;
+	float avg_luminance = exp(tex2D(avgLumTex, float2(0.5f, 0.5f)).x);
+	
+	float lum_temp = (tonemapScale / (avg_luminance + 0.001f)) * lum;
+	float ld = lum_temp / (lum_temp + 1.0f);
+	color = (color / lum) * ld;
+    
+    return float4(color, 1.0f);
+}

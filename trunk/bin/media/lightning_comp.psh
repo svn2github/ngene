@@ -1,0 +1,24 @@
+// Lightning composition pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+sampler lightningTex: register(s1);
+
+float flashFactor = 0.0f;
+float blurStrength = 0.5f;
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuse = tex2D(sceneTex, IN.texCoord);
+	float4 lightning = tex2D(lightningTex, IN.texCoord);
+	diffuse.xyz = lerp(diffuse.xyz, 1.0f, flashFactor);
+
+    return saturate(float4(lerp(lightning.xyz, diffuse.xyz, blurStrength), 1.0f));
+}

@@ -1,0 +1,44 @@
+// Thicken filter
+// Copyright (C) Wojciech Toman 2009
+// Info: authors of original file are Morgan McGuire and Kyle Whitson
+// 		 http://graphics.cs.williams.edu. The changes to their source
+//		 mainly include moving it from GLSL to HLSL.
+
+sampler diffuseMap: register(s0);
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+
+
+const float2 RIGHT = float2(1.0, 0.0);
+const float2 LEFT = float2(-1.0, 0.0);
+const float2 DOWN = float2(0.0, 1.0);
+const float2 UP = float2(0.0, -1.0);
+
+const float THRESH = 0.025;
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 pixel[5];
+
+    pixel[0] = tex2D(diffuseMap, IN.texCoord.xy).rgb;
+    pixel[1] = tex2D(diffuseMap, IN.texCoord.xy + RIGHT * pixel_size).rgb;
+    pixel[2] = tex2D(diffuseMap, IN.texCoord.xy + DOWN * pixel_size).rgb;
+    pixel[3] = tex2D(diffuseMap, IN.texCoord.xy + LEFT * pixel_size).rgb;
+    pixel[4] = tex2D(diffuseMap, IN.texCoord.xy + UP * pixel_size).rgb;
+
+	float4 colour = 1.0f;
+    // Multiply each element of pixel to get the shade
+    colour.rgb = ((pixel[0] * pixel[1] * pixel[2] * pixel[3] * pixel[4]) + pixel[0]) / 2.0;
+
+	return colour;
+}
+

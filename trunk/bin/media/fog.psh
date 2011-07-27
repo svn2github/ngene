@@ -1,0 +1,65 @@
+// Fog pixel shader
+// Copyright (C) Wojciech Toman 2008
+#define FOGMODE_NONE    0
+#define FOGMODE_LINEAR  1
+#define FOGMODE_EXP     2
+#define FOGMODE_EXP2    3
+#define E 2.71828
+
+// Fog Implementation
+int 	fogMode = FOGMODE_EXP; //Default is Exp
+float   fogStart = 12.0f;
+float   fogEnd = 22.0f;
+float 	fogDensity = 0.005f;
+float4  fogColor = {0.5f, 0.5f, 0.5f, 1.0f};
+
+sampler depthTex: register(s0);
+sampler backTex: register(s1);
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+//
+// Calculates fog factor based upon distance
+//
+float CalcFogFactor( float distance )
+{
+    float fogCoeff = 1.0;
+    
+    if( fogMode == FOGMODE_LINEAR )
+    {
+        fogCoeff = (fogEnd - distance)/(fogEnd - fogStart);
+    }
+    else if( fogMode == FOGMODE_EXP )
+    {
+        fogCoeff = 1.0 / pow( E, distance * fogDensity );
+    }
+    else if( fogMode == FOGMODE_EXP2 )
+    {
+        fogCoeff = 1.0 / pow( E, distance * distance *fogDensity*fogDensity );
+    }
+    
+    
+    return clamp( fogCoeff, 0, 1 );
+}
+
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float depth = length(tex2D(depthTex, IN.texCoord).xyz);
+    float4 scene = tex2D(backTex, IN.texCoord);
+    
+    if(depth == 0.0f)
+    {
+    	discard;
+    	return 0.0f;
+    }
+    
+    float fog = CalcFogFactor(depth);
+    float4 color = min(fogColor, lerp(scene, fogColor, 1.0f - (fog)));
+    return color;
+}

@@ -1,0 +1,2 @@
+<br />
+<b>Warning</b>:  mysql_close(): 51 is not a valid MySQL-Link resource in <b>/var/www/class.Database.php</b> on line <b>25</b><br />

@@ -1,0 +1,243 @@
+<?xml version="1.0"?>
+<library name="core" version="0.1" author="Wojciech Toman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="materialLib.xsd">
+  <textures>
+    <texture name="diffuse" usage="render_target" format="a16b16g16r16f" />
+    <texture name="normal" usage="render_target" format="a16b16g16r16f" />
+    <texture name="position" usage="render_target" format="a16b16g16r16f" />
+    <texture name="materialBuffer" usage="render_target" format="a16b16g16r16f" />
+  </textures>
+
+  <materials>
+    <material name="light_gbuffer" order="pre">
+      <technique name="main">
+        <pass name="light">
+          <sampler name="diffuse" usage="render_target" sampler="0" />
+          <sampler name="normal" usage="render_target" sampler="1" />
+          <sampler name="position" usage="render_target" sampler="2" />
+          <sampler name="materialBuffer" usage="render_target" sampler="3" />
+        </pass>
+      </technique>
+    </material>
+    <material name="light_directional" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="2">
+      <technique name="main">
+        <pass name="direction" order="post">
+          <sampler name="diffuse" sampler="0" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="position" sampler="1" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="normal" sampler="2" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+            <constant name="lightDir" semantic="LightDirection" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="light_directional.psh" profile="ps_2_a">
+            <constant name="lightColour" semantic="LightColour" dynamic="0"></constant>
+            <constant name="lightIntensity" semantic="LightIntensity" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="light_point" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="2">
+      <technique name="main">
+        <pass name="point" order="post">
+          <sampler name="diffuse" sampler="0" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="position" sampler="1" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="normal" sampler="2" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="light_point.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="lightPosition" semantic="LightPosition" dynamic="0"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="light_point.psh">
+            <constant name="lightColour" semantic="LightColour" dynamic="0"></constant>
+            <constant name="lightIntensity" semantic="LightIntensity" dynamic="0"></constant>
+            <constant name="lightRadius" semantic="LightRadius" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="light_spot" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="2">
+      <technique name="main">
+        <pass name="main" order="post">
+          <sampler name="diffuse" sampler="0" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="position" sampler="1" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="normal" sampler="2" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="light_spot.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="lightPosition" semantic="LightPosition" dynamic="0"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+            <constant name="spotDir" semantic="LightDirection" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="light_spot.psh">
+            <constant name="lightColour" semantic="LightColour" dynamic="0"></constant>
+            <constant name="lightIntensity" semantic="LightIntensity" dynamic="0"></constant>
+            <constant name="lightFov" semantic="LightFov" dynamic="0"></constant>
+            <constant name="spotExponent" semantic="LightSpotExponent" dynamic="0"></constant>
+            <constant name="constantAttenuation" semantic="LightConstantAttenuation" dynamic="0"></constant>
+            <constant name="linearAttenuation" semantic="LightLinearAttenuation" dynamic="0"></constant>
+            <constant name="quadraticAttenuation" semantic="LightQuadraticAttenuation" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="HDR" transparent="false" order="post" z_write="0">
+      <technique name="main">
+        <pass name="luminance_scene" order="post">
+          <texture name="hdr_lum_scene" usage="render_target" format="g32r32f" sampler="0" height_ratio="1.0" width_ratio="1.0"/>
+          <texture name="HDRBackBuffer" sampler="0" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_scene.psh" profile="ps_2_0"></pixel_shader>
+        </pass>
+        <pass name="luminance_1st" order="post">
+          <texture name="hdr_lum_1" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="512" width_ratio="512"/>
+          <texture name="HDRBackBuffer" sampler="0" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_1st.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="luminance_2nd" order="post">
+          <texture name="hdr_lum_2" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="128" width_ratio="128"/>
+          <texture name="hdr_lum_1" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_iter.psh" profile="ps_2_0">
+            <constant name="pixel_size" type="float2" dynamic="0">0.001953125 0.001953125</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="luminance_3nd" order="post">
+          <texture name="hdr_lum_3" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="32" width_ratio="32"/>
+          <texture name="hdr_lum_2" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_iter.psh" profile="ps_2_0">
+            <constant name="pixel_size" type="float2" dynamic="0">0.0078125 0.0078125</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="luminance_4nd" order="post">
+          <texture name="hdr_lum_4" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="8" width_ratio="8"/>
+          <texture name="hdr_lum_3" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_iter.psh" profile="ps_2_0">
+            <constant name="pixel_size" type="float2" dynamic="0">0.03125 0.0315</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="luminance_5nd" order="post">
+          <texture name="hdr_lum_5" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="2px" width_ratio="2px"/>
+          <texture name="hdr_lum_4" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_iter.psh" profile="ps_2_0">
+            <constant name="pixel_size" type="float2" dynamic="0">0.125 0.125</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="luminance_6nd" order="post">
+          <texture name="hdr_lum_final" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="1px" width_ratio="1px"/>
+          <texture name="hdr_lum_5" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lum_iter.psh" profile="ps_2_0">
+            <constant name="pixel_size" type="float2" dynamic="0">0.5 0.5</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="save_old_luminance" order="post">
+          <texture name="hdr_lum_final_last" sampler="0" format="a16b16g16r16f" usage="render_target" height_ratio="1px" width_ratio="1px" bind_as_texture="false"/>
+          <texture name="hdr_avg_lum" sampler="0" usage="render_target" format="a16b16g16r16f" height_ratio="1px" width_ratio="1px" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE" bind_as_texture="true"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="save_lum.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="adaptation" order="post">
+          <texture name="hdr_avg_lum" sampler="0" usage="render_target" format="a16b16g16r16f" height_ratio="1px" width_ratio="1px" bind_as_texture="false"/>
+          <texture name="hdr_lum_final_last" sampler="0" bind_as_texture="true" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"/>
+          <texture name="hdr_lum_final" sampler="1" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="adaptation.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="bloom_downsample" order="post">
+          <texture name="hdr_bloom_down" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="HDRBackBuffer" sampler="0" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"></texture>
+          <vertex_shader file="downsample.vsh" profile="vs_3_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="downsample_hdr.psh" profile="ps_3_0">
+            <constant name="threshold" type="float">2.0</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="bloom_hblur" order="post">
+          <texture name="hdr_bloom_hblur" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="hdr_bloom_down" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">1.0 0.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">1.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="bloom_vblur" order="post">
+          <texture name="hdr_bloom_vblur" usage="render_target" format="a16b16g16r16f" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="hdr_bloom_hblur" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">0.0 1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">1.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="HDRBackBuffer" sampler="0" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE"/>
+          <texture name="hdr_bloom_vblur" sampler="1" filter_min="FILTER_TRILINEAR"  filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_NONE"/>
+          <texture name="hdr_avg_lum" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE" bind_as_texture="true"/>
+          <texture name="hdr_lum_scene" sampler="3" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NONE" bind_as_texture="true"/>
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="hdr_composition.psh" profile="ps_2_0"></pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="diffuse">
+      <technique name="main">
+        <pass name="diffuse">
+          <sampler name="diffuse" sampler="0" />
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="diffuse.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+  </materials>
+  
+</library>

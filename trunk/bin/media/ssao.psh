@@ -1,0 +1,92 @@
+// Screen-space ambient occlusion pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler depthTex: register(s0);
+sampler ditherTex: register(s1);
+
+float aspect = 1.33f;
+float tanHalfFov = 0.414f;
+float radius = 1.5f;
+const int samplesNum = 32;
+float range = 50.0f;
+float2 ditherScale = {8.0f, 6.0f};
+float depthThresh = 100.0f;
+
+float3 table[32] = 
+{
+	{1.00595,-0.000276625,0.0012901},
+	{-0.711506,-0.711115,0.0012901},
+	{0.503747,-0.711507,-0.501922},
+	{0.504023,0.711115,-0.502199},
+	{0.00129056,-0.711115,0.711506},
+	{0.00129038,0.711506,0.711115},
+	{0.00129014,0.711115,-0.711506},
+	{0.00110805,-1.00594,-0.000716925},
+	{-0.501922,-0.711506,-0.503747},
+	{0.504024,-0.711115,0.502198},
+	{0.711506,-0.711115,-0.00129092},
+	{0.711115,0.711506,-0.00129046},
+	{-0.711506,0.711115,-0.00129043},
+	{-0.503746,-0.711507,0.501921},
+	{0.501921,0.711506,-0.503747},
+	{-0.00110823,1.00595,-0.000716925},
+	{-0.504023,0.711115,0.502198},
+	{-0.00129068,-0.711115,-0.711507},
+	{-0.503747,0.711506,-0.501922},
+	{0.502198,0.711115,0.504023},
+	{0.712223,-0.000276625,-0.710398},
+	{0.00129032,-0.000276625,-1.00595},
+	{-0.710398,-0.000276625,-0.712223},
+	{-1.00595,-0.000276625,-0.00129035},
+	{-0.712223,-0.000276625,0.710398},
+	{-0.00129032,-0.000276625,1.00595},
+	{0.710398,-0.000276625,0.712223},
+	{0.92,0.834,0.852},
+	{1.0,-0.844,0.847},
+	{-0.91,-0.72,-0.893},
+	{0.96,-0.95,-0.956},
+	{0.9631,-0.962,0.83}
+};
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 eyeVec: TEXCOORD1;
+};
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 position = tex2D(depthTex, IN.texCoord).xyz;
+    float depth = length(position);
+    if(depth > depthThresh)
+    {
+    	return 1.0f;
+    }
+    
+	float3 ep = position;
+    
+	float3 ditherPlane = normalize(2.0f * tex2D(ditherTex, IN.texCoord * ditherScale.xy).xyz - 1.0f);
+    
+	float blockingFactor = 0.0f;
+	float2 params = IN.eyeVec.z * float2(1.0f / aspect, 1.0f);
+	
+	for(int i = 0; i < samplesNum; ++i)
+	{
+		float3 spherePoint = ep + radius * reflect(table[i].xyz, ditherPlane.xyz);
+		
+		// Project back to clip-space
+		float2 ss = (spherePoint.xy / spherePoint.z) * params;
+		float2 sn = ss * float2(0.5f, -0.5f) + 0.5f;
+		float pixelDepth = tex2D(depthTex, sn).z;
+        
+		float zDiff = range * max(spherePoint.z - pixelDepth, 0.0f);
+
+		blockingFactor += 1.0f / (1.0f + zDiff * zDiff);
+	}
+	
+	float4 colour = max(blockingFactor / 32, 0.0f);
+	colour.w = 1.0f;
+
+	return lerp(colour, 1.0f, depth / depthThresh);
+}

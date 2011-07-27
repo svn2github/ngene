@@ -1,0 +1,24 @@
+// Shadow composite pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler shadowTex: register(s0);
+sampler sceneTex: register(s1);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{	
+	float4 scene = tex2D(sceneTex, IN.texCoord);
+	float4 shadow = tex2D(shadowTex, IN.texCoord);
+	
+	float4 colour = 1.0f;
+	colour.xyz = min((scene * shadow).xyz, scene.xyz);
+	
+	return saturate(colour);
+}

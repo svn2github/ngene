@@ -1,0 +1,25 @@
+// Adaptation pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler lumLast: register(s0);
+sampler lum: register(s1);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+float adaptationSpeed = 0.99f;
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 currentFrame = tex2D(lum, IN.texCoord).x;
+	float4 previousFrame = tex2D(lumLast, IN.texCoord).x;
+	
+	float4 colour = lerp(currentFrame, previousFrame, adaptationSpeed);
+	
+	return colour;
+}

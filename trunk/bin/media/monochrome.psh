@@ -1,0 +1,22 @@
+// Monochrome pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 scene = tex2D(sceneTex, IN.texCoord);
+	float saturation = 0.3 * scene.r + 0.59 * scene.g + 0.11 * scene.b;
+	if(saturation >= 0.5f)
+		return 1.0f;
+	else
+		return 0.0f;
+}

@@ -1,0 +1,72 @@
+// Snow pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler diffuseMap: register(s0);
+sampler normalMap: register(s1);
+sampler specularMap: register(s2);
+
+float specular_intensity = 0.16f;
+float2 texCoordMult = {1.0f, 1.0f};
+
+float4x4 matViewIT;
+float emissive = 0.0f;
+float heightScale = 0.25f;
+
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 position   : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+    float3 normal	  : TEXCOORD1;
+    float3 V		  : TEXCOORD2;
+    float3 positionV  : TEXCOORD3;
+};
+
+float3x3 invert_3x3(float3x3 mat)
+{
+	float det = determinant(mat);
+	float3x3 T = transpose(mat);
+	return float3x3(cross(T[1], T[2]),
+					cross(T[2], T[0]),
+					cross(T[0], T[1])) / det;
+}
+
+float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
+{
+	float3 dp1 = ddx(P);
+	float3 dp2 = ddy(P);
+	float2 duv1 = ddx(UV);
+	float2 duv2 = ddy(UV);
+	
+	float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
+	float3x3 inverseM = invert_3x3(M);
+	float3 T = mul(inverseM, float3(duv1.x, duv2.x, 0.0f));
+	float3 B = mul(inverseM, float3(duv1.y, duv2.y, 0.0f));
+	
+	float maxLength = max(length(T), length(B));
+	return float3x3(T / maxLength, B / maxLength, N);
+}
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float2 texCoord = texCoordMult * IN.texCoord;
+	float3x3 tangentFrame = compute_tangent_frame(IN.normal, IN.V, texCoord);
+	float3 normal = normalize(mul(2.0f * tex2D(normalMap, texCoord) - 1.0f, tangentFrame));
+	float3 normalWorld = mul(normal, matViewIT);
+	float4 color = tex2D(diffuseMap, texCoord).rgba;
+
+	PS_OUTPUT OUT;
+	OUT.diffuse = color;
+	OUT.normal.rgba = float4(normalWorld, emissive * (0.1 + tex2D(specularMap, texCoord).r));
+	OUT.position = float4(IN.positionV + normalize(normalWorld) * heightScale, 0);
+	
+	return OUT;
+}

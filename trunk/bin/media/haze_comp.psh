@@ -1,0 +1,40 @@
+// Haze composition pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler lightTex: register(s0);
+sampler lightTex2: register(s1);
+sampler sceneTex: register(s2);
+sampler normalTex: register(s3);
+
+
+float lightIntensity = 1.0f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 lightDir: TEXCOORD1;
+};
+
+
+half4 main(VertexOutput IN): COLOR
+{	
+	half4 diffuse = tex2D(sceneTex, IN.texCoord);
+	half4 extinction = tex2D(lightTex, IN.texCoord + 0.5 / 256);
+	half4 inscatter = tex2D(lightTex2, IN.texCoord + 0.5 / 256);
+	
+	half4 normal = tex2D(normalTex, IN.texCoord);
+	
+	if(length(normal.xyz) < 0.01f)
+	{
+		return half4(diffuse.xyz * normal.w, 1.0f);
+	}
+	
+	half3 lightDir = normalize(IN.lightDir);
+	half NdotL = saturate(dot(normal, lightDir) + 0.3);
+	half light = saturate(lightIntensity * NdotL);
+	diffuse += half4(diffuse.xyz * normal.w * NdotL, 1.0f);
+	
+	return (light * diffuse * extinction + inscatter);
+}

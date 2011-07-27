@@ -1,0 +1,60 @@
+// Anti-aliasing pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+sampler normalTex: register(s1);
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+float weight = 1.5f;
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+const float2 delta[8] =
+{
+	float2(-1,1),
+	float2(1,-1),
+	float2(-1,1),
+	float2(1,1),
+	float2(-1,0),
+	float2(1,0),
+	float2(0,-1),
+	float2(0,1)
+};
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 tex = tex2D(normalTex, IN.texCoord);
+	float factor = 0.0f;
+
+	for(int i = 0; i < 4; i++)
+	{
+		float4 t = tex2D(normalTex, IN.texCoord + delta[i] * pixel_size);
+		t -= tex;
+		factor += dot(t, t);
+	}
+	factor = min(1.0, factor) * weight;
+ 
+	float4 color = 0.0f; 
+	for(int j = 0; j < 8; j++)
+	{
+	    color += tex2D(diffuseTex, IN.texCoord + delta[j] * pixel_size * factor);
+  	}
+
+  	color += 2.0 * tex2D(diffuseTex, IN.texCoord);
+	color = color * (1.0 / 10.0);
+  
+	return color;
+}

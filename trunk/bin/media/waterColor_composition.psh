@@ -1,0 +1,21 @@
+// Water color composition pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler edgeTex: register(s0);
+sampler sceneTex: register(s1);
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+float bright = 1.25f;
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 edgePixel = tex2D(edgeTex, IN.texCoord).rgb * 0.8 + float3(0.2, 0.2, 0.2);
+    float3 medianPixel = tex2D(sceneTex, IN.texCoord).rgb;
+
+    return float4(edgePixel * medianPixel * bright, 1.0f);
+}

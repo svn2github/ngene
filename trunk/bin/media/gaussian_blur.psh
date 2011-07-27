@@ -1,0 +1,35 @@
+// Gaussian blur pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler difTexture: register(s1);
+
+
+float weight[7] =
+{
+	0.05f,
+	0.1f,
+	0.2f,
+	0.3f,
+	0.2f,
+	0.1f,
+	0.05f
+};
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord[7]: TEXCOORD0;
+};
+
+
+float4 PS_GaussianBlur(VertexOutput IN): COLOR0
+{
+	float4 colour = 0.0f;
+	for(int i = 0; i < 7; i++)
+	{
+		colour += tex2D(difTexture, IN.texCoord[i]) * weight[i];
+	}
+	
+	return colour;
+}

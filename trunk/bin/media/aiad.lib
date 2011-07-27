@@ -1,0 +1,315 @@
+<?xml version="1.0"?>
+<library name="core" version="0.1" author="Wojciech Toman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="materialLib.xsd">
+
+  <materials>
+    <material name="playerShip" cast_shadow="1" emissive_factor="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="playerShip" file="playerShip.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="playerShip_bump" file="playerShip_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+            <constant name="materialID" type="float" dynamic="false">1.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="enemyShip" cast_shadow="1" emissive_factor="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="enemyShip" file="enemyShip.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="playerShip_bump" file="playerShip_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="ghostShip" cast_shadow="1" emissive_factor="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="ghostShip" file="ghostShip.png" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="playerShip_bump" file="playerShip_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="mirkhaShip" cast_shadow="1" emissive_factor="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="mirkhaShip" file="mirkhaShip.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="playerShip_bump" file="playerShip_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="kanaraShip" cast_shadow="1" emissive_factor="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="kanaraShip" file="kanaraShip.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="playerShip_bump" file="playerShip_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="projectile" cast_shadow="0" two_sided="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="steel" file="rust_steel.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="texCoordMult" type="float2" dynamic="false">4.0 4.0</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="debris" cast_shadow="1" two_sided="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="steel" file="rust_steel.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="terrain" two_sided="false" cast_shadow="false" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="terrain">
+          <texture name="mud" file="mud.jpg" sampler="0" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="grass" file="grass_2.jpg" sampler="1" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="stones" file="rocks.png" sampler="2" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="snow" file="snow.jpg" sampler="3" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="mud_bump" file="rocks_bump.png" sampler="4" addressing_mode="ADDRESS_WRAP" filter_min="FILTER_TRILINEAR" />
+          <vertex_shader file="terrain_aiad.vsh" profile="vs_2_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="terrain_aiad.psh" profile="ps_2_a" function="main">
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="powerup" cast_shadow="0" two_sided="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="diffuse_colour.psh" profile="ps_2_a">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="colour" type="float4" dynamic="1">0.0f 1.0f 0.0f 1.0f</constant>
+            <constant name="specular_intensity" type="float" dynamic="1">0.01f</constant>
+            <constant name="materialID" type="float" dynamic="1">2.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="enemyHit" cast_shadow="1" two_sided="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="diffuse_colour.psh" profile="ps_2_a">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="colour" type="float4" dynamic="1">1.0f 0.0f 0.0f 1.0f</constant>
+            <constant name="specular_intensity" type="float" dynamic="1">0.01f</constant>
+            <constant name="materialID" type="float" dynamic="1">0.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="shield" cast_shadow="0" two_sided="0" transparent="1" src_blend="5" dest_blend="6" >
+      <technique name="main">
+        <pass name="normalmap">
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="shield_diffuse_colour.psh" profile="ps_2_a">
+            <constant name="colour" type="float4" dynamic="1">1.0f 0.84f 0.0f 1.0f</constant>
+            <constant name="specular_intensity" type="float" dynamic="1">0.32f</constant>
+            <constant name="shininess" type="float" dynamic="1">2.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="water" order="post" cast_shadow="false" z_write="false">
+      <technique name="main">
+        <pass name="water">
+          <texture name="water_height" file="water_height.jpg" sampler="0" addressing_mode="ADDRESS_MIRROR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" filter_min="FILTER_TRILINEAR" />
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" filter_mip="FILTER_NEAREST" />
+          <texture name="position" sampler="2" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <texture name="water_bump" file="water_bump.png" sampler="3" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP" />
+          <texture name="water_foam" file="foam.dds" sampler="4" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" />
+          <vertex_shader file="water.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" dynamic="1"></constant>
+          </vertex_shader>
+          <pixel_shader file="water_aiad.psh" defines="USE_FOAM;USE_UNDERWATER">
+            <constant name="matViewInverse" semantic="CameraInverse" dynamic="true"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="true"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="clouds_particle" transparent="true" z_write="false" order="post" src_blend="5" dest_blend="6" cast_shadow="0">
+      <technique name="main">
+        <pass name="particle" order="scene">
+          <texture name="smoke_rt" usage="render_target" sampler="0" width_ratio="1.0" height_ratio="1.0" clear_depth="1" clear_target="1"></texture>
+          <texture name="smoke" file="smoke.dds" sampler="0"></texture>
+          <texture name="position" sampler="1"></texture>
+          <texture name="particle_mask" file="particle_mask.png" sampler="2"></texture>
+          <vertex_shader file="particle.vsh">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matView" semantic="View" dynamic="false"></constant>
+            <constant name="matViewInv" semantic="ViewInverse" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="particle.psh">
+            <constant name="density" type="float" dynamic="false">1.5</constant>
+            <constant name="near" semantic="NearPlane" dynamic="false" />
+          </pixel_shader>
+        </pass>
+        <pass name="render" order="post">
+          <texture name="smoke_rt" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"></texture>
+          <vertex_shader file="post_particle.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="post.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="scale" type="float" dynamic="false">1.0</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="fern" cast_shadow="1" two_sided="1" emissive_factor="600.0" alpha_test="true" alpha_test_ref="20">
+      <technique name="main">
+        <pass name="main">
+          <texture name="fern" file="fern.dds" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="vegetation_leaves.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+            <constant name="matView" semantic="View"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="specular_intensity" type="float" dynamic="false">0.04</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+      <technique name="shadow">
+        <pass name="shadow_main">
+          <texture name="shadowDepth" usage="render_target" format="r32f" sampler="0" width_ratio="512" height_ratio="512" clear_depth="false" clear_target="false" bind_as_texture="0"/>
+          <vertex_shader file="vegetation_leaves_shadow.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="shadow_map.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="clouds" cast_shadow="1" emissive_factor="10" order="post" src_blend="2" dest_blend="1">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="aiad_clouds" file="aiad_clouds.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" filter_mip="FILTER_NEAREST" />
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="aiad_clouds.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+  </materials>
+  
+</library>

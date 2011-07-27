@@ -1,0 +1,17 @@
+// Adaptation pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler lum: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	return tex2D(lum, float2(0.5f, 0.5f));
+}

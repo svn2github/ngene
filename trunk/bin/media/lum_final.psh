@@ -1,0 +1,47 @@
+// Luminance final pass pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler sceneTex: register(s1);
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+float2 offsets[16] =
+{
+	{-0.0234375, -0.0234375},
+	{-0.0078125, -0.0234375},
+	{0.0078125, -0.0234375},
+	{0.0234375, -0.0234375},
+	{-0.0234375, -0.0078125},
+	{-0.0078125, -0.0078125},
+	{0.0078125, -0.0078125},
+	{0.0234375, -0.0078125},
+	{-0.0234375, 0.0078125},
+	{-0.0078125, 0.0078125},
+	{0.0078125, 0.0078125},
+	{0.0234375, 0.0078125},
+	{-0.0234375, 0.0234375},
+	{-0.0078125, 0.0234375},
+	{0.0078125, 0.0234375},
+	{0.0234375, 0.0234375},
+};
+
+float iteration = 0.0f;
+
+half4 main(VertexOutput IN): COLOR
+{
+    float result = 0.0f;
+    float mult = pow(4.0f, iteration);
+
+    for(int i = 0; i < 16; i++)
+    {
+        result += tex2D(sceneTex, IN.texCoord + offsets[i] * mult);
+    }
+    
+	result = exp(result / 16.0f);
+
+	return float4(result, result, result, 1.0f);
+}

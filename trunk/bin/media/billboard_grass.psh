@@ -1,0 +1,43 @@
+// Billboard grass + dissolve pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler diffuseTex: register(s0);
+sampler dissolveTex: register(s1);
+
+struct VertexOutput
+{
+	float4 hPosition:POSITION0;
+	float4 diffuse : COLOR0;
+	float2 texCoord: TEXCOORD0;
+	float3 normal  : TEXCOORD1;
+	float3 positionV: TEXCOORD2;
+};
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+
+float fadeDepth = 200.0f;
+float fadeFactor = 0.5f;
+float emissive = 0.0f;
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float4 diffuse = tex2D(diffuseTex, IN.texCoord);
+	diffuse.a *= (tex2D(dissolveTex, IN.texCoord) * (fadeFactor / (IN.positionV.z / fadeDepth))).x;
+	
+	if(diffuse.a < 0.2)
+		discard;
+	
+	PS_OUTPUT OUT;
+	OUT.diffuse = diffuse;
+	OUT.normal = float4(normalize(IN.normal), emissive);
+	OUT.position = float4(IN.positionV, 0.0f);
+	
+	return OUT;
+}

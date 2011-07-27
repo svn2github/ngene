@@ -1,0 +1,123 @@
+// Saturation pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+/// Saturation of shadows
+float shadowsSaturation = 0.66f;
+/// Saturation of highlights
+float highlightsSaturation = 1.5f;
+
+/// Shadows are defined in range [0.0; shadowsThreshold];
+float shadowsThreshold = 0.3f;
+/// Highlights are defined in range [highlightsThreshold; 1.0]
+float highlightsThreshold = 0.7f;
+
+
+float3 rgbToHSV(float r, float g, float b)
+{
+	float MIN = min(min(r, g), b);
+	float MAX = max(max(r, g), b);
+	
+	float h;
+	float s;
+	float v = MAX;
+	
+	float d = MAX - MIN;
+	
+	if(MAX != 0.0f)
+	{
+		s = d / MAX;
+	}
+	else
+	{
+		s = 0.0f;
+		h = -1.0f;
+		
+		return float3(h, s, v);
+	}
+	
+	if(r == MAX)
+		h = (g - b) / d;
+	else if(g == MAX)
+		h = 2.0f + (b - r) / d;
+	else
+		h = 4.0f + (r - g) / d;
+	
+	h *= 60.0f;
+	if(h < 0.0f)
+		h += 360.0f;
+		
+	return float3(h, s, v);
+}
+
+float3 hsvToRGB(float h, float s, float v)
+{
+	int i = 0;
+	
+	float r;
+	float g;
+	float b;
+	
+	float f, p, q, t;
+	if(s == 0.0f)
+	{
+		r = g = b = v;
+		return float3(r, g, b);
+	}
+	
+	h /= 60.0f;
+	i = floor(h);
+	f = h - i;
+	p = v * (1.0f - s);
+	q = v * (1.0f - s * f);
+	t = v * (1.0f - s * (1.0f - f));
+	
+	if(i == 0)
+		return float3(v, t, p);
+	if(i == 1)
+		return float3(q, v, p);
+	if(i == 2)
+		return float3(p, v, t);
+	if(i == 3)
+		return float3(p, q, v);
+	if(i == 4)
+		return float3(t, p, v);
+	
+	return float3(v, p, q);
+}
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 colour = 1.0f;
+	
+	float4 scene = tex2D(sceneTex, IN.texCoord);
+	/*float3 saturated = saturate(scene.rgb * 2);
+	float3 lum = dot(saturated.rgb, float3(0.39f, 0.51f, 0.1f));
+	colour.rgb = lerp(lum, saturated.xyz, saturation);*/
+	
+	colour = scene;
+	
+	float lum = dot(colour.xyz, float3(0.39f, 0.51f, 0.1f));
+	
+	if(lum <= shadowsThreshold)
+	{
+		colour.rgb = rgbToHSV(colour.r, colour.g, colour.b);
+		colour.rgb = hsvToRGB(colour.r, colour.g * shadowsSaturation, colour.b);
+	}
+	else if(lum >= highlightsThreshold)
+	{
+		colour.rgb = rgbToHSV(colour.r, colour.g, colour.b);
+		colour.rgb = hsvToRGB(colour.r, colour.g * highlightsSaturation, colour.b);
+	}
+	
+	return colour;
+}

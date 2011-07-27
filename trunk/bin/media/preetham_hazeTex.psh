@@ -1,0 +1,148 @@
+// Preetham scattering aerial perspective pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+float lightIntensity = 1.0f;
+
+// Scene ambient
+float4 ambient = {0.1f, 0.1f, 0.1f, 0.1f};
+
+float3 a_C1plusC2 = {0.00185746, 0.00187312, 0.00297412};
+float2 a_alpha = {0.00083331810, 0.00011360016};
+float3 a_betaMie = {0.0016386401, 0.0016619208, 0.0024636989};
+float3 a_betaRay = {0.00025196010, 0.00024477459, 0.00056073267};
+float2 a_bins = {5.0f, 6.0f};
+float3x3 a_colorConvMat = float3x3(float3(3.240479,-1.53715,-0.498535),
+								   float3(-0.969256,1.875992,0.041556),
+								   float3(0.055648,-0.204043,1.0573109));
+float3 a_constants = {0.98019904, 0.99727732, 0.0069999998};
+
+
+sampler diffuseTex: register(s0);
+sampler positionTex: register(s1);
+sampler normalTex: register(s2);
+
+sampler MieSampler: register(s3);
+sampler RaySampler: register(s4);
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 eyeVec: TEXCOORD1;
+	float3 lightDir: TEXCOORD2;
+};
+
+
+float evalFunc(float a_B, float depth)
+{
+	float result;
+	
+	if(abs(a_B * depth) < 0.01f)
+		result = depth;
+	else
+		result = (1.0f - exp(-a_B * depth)) / a_B;
+		
+	return result;	
+}
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuse = tex2D(diffuseTex, IN.texCoord);	
+	float4 normal = tex2D(normalTex, IN.texCoord);
+	
+	if(length(normal.xyz) < 0.01f)
+		return float4(diffuse.xyz * normal.w, 1.0f);
+	else
+	{
+		const float epsilon = 1e-4;
+		
+		float4 parameters = tex2D(positionTex, IN.texCoord);
+		float3 position = parameters.xyz;
+		float depth = length(position);
+		float3 direction = normalize(position);
+		direction.z *= -1.0f;
+		
+		float thetav = ((-direction.z + 1.0) / 2.0) * a_bins.x - epsilon;
+		thetav = max(thetav, 0.0f);
+		
+		float2 dirTemp = normalize(float2(direction.x, direction.y));
+		
+		if(dirTemp.y < 0.0)
+			dirTemp.x = (-dirTemp.x + 2.0);
+			
+		float phiv = ((-dirTemp.x + 1.0) / 4.0) * a_bins.x - epsilon;
+		phiv = max(phiv, 0.0f);
+		
+		int i = thetav;
+		int j = phiv;
+		float2 uv = float2(thetav - i, phiv - j);
+		
+		int4 indicesTemp = int4(i * a_bins.y + j, (i + 1) * a_bins.y + j,i * a_bins.y + j + 1,(i + 1) * a_bins.y + j + 1);
+		float4 	indices = indicesTemp * (1.0f / 36.0f) + 0.00001f;
+		indices = clamp(indices,0.0f, 1.0f);
+		
+		float2 B = a_alpha * direction.z;
+		float3 Fex = exp(-a_betaMie * a_constants.x * evalFunc(B.x, depth)) * 
+					 exp(-a_betaRay * a_constants.y * evalFunc(B.y, depth));
+		float3 Extinction = mul(Fex, a_colorConvMat);
+		
+		float3 IMie = a_constants.x * ((1.0f - exp(-(B.x + a_C1plusC2) * depth)) / (B.x + a_C1plusC2));
+		float3 IRay = a_constants.y * ((1.0f - exp(-(B.y + a_C1plusC2) * depth)) / (B.y + a_C1plusC2));
+		
+		float weight = (1.0f - uv.x) * (1.0f - uv.y);
+		float3 Lin =  tex2D(MieSampler, float2(indices.x, 0.5f)).xyz * IMie;
+		float3 Lin2 = tex2D(RaySampler, float2(indices.x, 0.5f)).xyz * IRay;
+		
+		Lin += Lin2;
+		Lin *= weight;	
+		
+		weight = uv.x * (1.0f - uv.y);
+		float3 Lin3 = tex2D(MieSampler, float2(indices.y, 0.5f)).xyz * IMie;
+		float3 Lin4 = tex2D(RaySampler, float2(indices.y, 0.5f)).xyz * IRay;
+		Lin3 += Lin4;
+		Lin3 *= weight;		
+		
+		weight = (1.0f - uv.x) * uv.y;
+		float3 Lin5 = tex2D(MieSampler, float2(indices.z, 0.5f)).xyz * IMie;
+		float3 Lin6 = tex2D(RaySampler, float2(indices.z, 0.5f)).xyz * IRay;
+		Lin5 += Lin6;
+		Lin5 *= weight;
+		
+		weight = uv.x * uv.y;
+		float3 Lin7 = tex2D(MieSampler, float2(indices.w, 0.5f)).xyz * IMie;
+		float3 Lin8 = tex2D(RaySampler, float2(indices.w, 0.5f)).xyz * IRay;
+		Lin7 += Lin8;
+		Lin7 *= weight;
+		
+		Lin += Lin7;
+		Lin += Lin5;
+		Lin += Lin3;
+		Lin *= a_constants.z;
+		float3 Inscatter = mul(Lin, a_colorConvMat);
+		
+		float specular_intensity = parameters.w;
+		float kS = 0.0f;
+		float3 lightDir = normalize(IN.lightDir);
+		
+		if(specular_intensity < 0.01f)
+			kS = 0.0f;
+		else
+		{
+			float3 V = normalize(-IN.eyeVec);
+			float3 H = normalize(lightDir + V);
+			float shininess = 0.5f;
+			float e = shininess * 64;
+			float kD = saturate(dot(normal.xyz, lightDir));
+			kS = kD * specular_intensity * pow(saturate(dot(normal.xyz, H)), e) * sqrt((e + 1.0f) / 2.0f);
+		}
+		
+		float3 light = saturate(lightIntensity * dot(normal.xyz, lightDir));
+		
+		float4 emission = float4(diffuse.xyz * normal.w * (saturate(dot(normal.xyz, lightDir)) + 0.5f), 1.0f);
+		diffuse += emission;
+		
+		return (float4(((light + ambient.xyz) * diffuse.xyz * Extinction + Inscatter + kS), 1.0f));
+	}
+}

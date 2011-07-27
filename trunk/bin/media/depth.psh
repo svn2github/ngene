@@ -1,0 +1,15 @@
+// Scene-Depth pixel shader
+// Copyright (C) Wojciech Toman 2007
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float3 pos: TEXCOORD1;
+};
+
+float4 main(VertexOutput IN): COLOR0
+{
+//	float4 colour = float4(IN.pos.z, 0.0f, 0.0f, 0.0f);
+    float4 colour = float4(length(IN.pos), 0.0f, 0.0f, 0.0f);
+    return colour;
+}

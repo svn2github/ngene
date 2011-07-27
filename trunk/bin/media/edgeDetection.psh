@@ -1,0 +1,41 @@
+// Edge detection filter pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler normalTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float2 kernel[4] =
+{
+    { 0,  1},
+    { 1,  0},
+    { 0, -1},
+    {-1,  0}
+};
+
+float strength = 1.0f;
+
+float2 pixelSize = {1.0f / 800.0f, 1.0f / 600.0f};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float4 normal = tex2D(normalTex, IN.texCoord);
+    if(length(normal.xyz) == 0.0f)
+    	return 0.0f;
+	else
+	{
+		float3 result = 0;
+
+		for(int i = 0; i < 4; i++)
+			result += saturate(1.0 - dot(normal.xyz, tex2D(normalTex, IN.texCoord + kernel[i] * pixelSize * strength).rgb));
+
+		return float4(result, 1.0f);
+	}
+}

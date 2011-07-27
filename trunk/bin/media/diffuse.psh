@@ -1,0 +1,21 @@
+// Diffuse pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float4 diffuse:  COLOR0;
+	float2 texCoord: TEXCOORD0;
+	float3 normal: TEXCOORD1;
+};
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float4 diffuseMap = tex2D(diffuseTex, IN.texCoord);
+    float4 colour = diffuseMap;
+    colour.a = 1.0f;
+    
+    return colour;
+}

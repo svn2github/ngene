@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="library">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="textures" minOccurs="0" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="texture" minOccurs="1" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:attribute name="name" type="xsd:string" use="required" />
+                  <xsd:attribute name="file" type="xsd:string" use="optional" />
+                  <xsd:attribute name="format" type="TextureFormats" />
+                  <xsd:attribute name="usage" type="TextureUsages" />
+                  <xsd:attribute name="height_ratio" />
+                  <xsd:attribute name="width_ratio" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="materials" minOccurs="1" maxOccurs="1">
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="material" minOccurs="1" maxOccurs="unbounded">
+                <xsd:complexType>
+                  <xsd:sequence>
+                    <xsd:element name="technique" minOccurs="1" maxOccurs="unbounded">
+                      <xsd:complexType>
+                        <xsd:sequence>
+                          <xsd:element name="pass" minOccurs="1" maxOccurs="unbounded">
+                            <xsd:complexType>
+                              <xsd:sequence>
+                                <xsd:element name="texture" minOccurs="0" maxOccurs="unbounded">
+                                  <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="sampler" type="xsd:int" use="optional" />
+                                    <xsd:attribute name="file" type="xsd:string" use="optional" />
+                                    <xsd:attribute name="filter_min" type="FilterTypes" />
+                                    <xsd:attribute name="filter_mag" type="FilterTypes" />
+                                    <xsd:attribute name="filter_mip" type="FilterTypes" />
+                                    <xsd:attribute name="addressing_mode" type="Addressings" />
+                                    <xsd:attribute name="format" type="TextureFormats" />
+                                    <xsd:attribute name="usage" type="TextureUsages" />
+                                    <xsd:attribute name="height_ratio" />
+                                    <xsd:attribute name="width_ratio" />
+                                    <xsd:attribute name="bind_as_texture" type="xsd:boolean" />
+                                    <xsd:attribute name="clear_target" type="xsd:boolean" />
+                                    <xsd:attribute name="clear_depth" type="xsd:boolean" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="sampler" minOccurs="0" maxOccurs="unbounded">
+                                  <xsd:complexType>
+                                    <xsd:attribute name="name" type="xsd:string" use="required" />
+                                    <xsd:attribute name="sampler" type="xsd:int" use="required" />
+                                    <xsd:attribute name="file" type="xsd:string" use="optional" />
+                                    <xsd:attribute name="filter_min" type="FilterTypes" />
+                                    <xsd:attribute name="filter_mag" type="FilterTypes" />
+                                    <xsd:attribute name="filter_mip" type="FilterTypes" />
+                                    <xsd:attribute name="addressing_mode" type="Addressings" />
+                                    <xsd:attribute name="format" type="TextureFormats" />
+                                    <xsd:attribute name="usage" type="TextureUsages" />
+                                    <xsd:attribute name="height_ratio" />
+                                    <xsd:attribute name="width_ratio" />
+                                    <xsd:attribute name="bind_as_texture" type="xsd:boolean" />
+                                    <xsd:attribute name="clear_target" type="xsd:boolean" />
+                                    <xsd:attribute name="clear_depth" type="xsd:boolean" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="vertex_shader" minOccurs="0" maxOccurs="1">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="constant" type="constant" minOccurs="0" maxOccurs="unbounded" />
+                                    </xsd:sequence>
+                                    <xsd:attribute name="file" type="xsd:string" use="required" />
+                                    <xsd:attribute name="name" type="xsd:string" />
+                                    <xsd:attribute name="profile" type="VSProfiles" />
+                                    <xsd:attribute name="function" type="xsd:string" />
+                                    <xsd:attribute name="defines" type="xsd:string" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="geometry_shader" minOccurs="0" maxOccurs="1">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="constant" type="constant" minOccurs="0" maxOccurs="unbounded" />
+                                    </xsd:sequence>
+                                    <xsd:attribute name="file" type="xsd:string" use="required" />
+                                    <xsd:attribute name="name" type="xsd:string" />
+                                    <xsd:attribute name="profile" type="GSProfiles" />
+                                    <xsd:attribute name="function" type="xsd:string" />
+                                    <xsd:attribute name="defines" type="xsd:string" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                                <xsd:element name="pixel_shader" minOccurs="0" maxOccurs="1">
+                                  <xsd:complexType>
+                                    <xsd:sequence>
+                                      <xsd:element name="constant" type="constant" minOccurs="0" maxOccurs="unbounded" />
+                                    </xsd:sequence>
+                                    <xsd:attribute name="file" type="xsd:string" use="required" />
+                                    <xsd:attribute name="name" type="xsd:string" />
+                                    <xsd:attribute name="profile" type="PSProfiles" />
+                                    <xsd:attribute name="function" type="xsd:string" />
+                                    <xsd:attribute name="defines" type="xsd:string" />
+                                  </xsd:complexType>
+                                </xsd:element>
+                              </xsd:sequence>
+                              <xsd:attribute name="name" type="xsd:string" use="required" />
+                              <xsd:attribute name="order" type="Orders" />
+                              <xsd:attribute name="run_count" type="xsd:int" use="optional" />
+                            </xsd:complexType>
+                          </xsd:element>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string" use="required" />
+                      </xsd:complexType>
+                    </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="name" type="xsd:string" use="required" />
+                  <xsd:attribute name="alpha_test" type="xsd:boolean" />
+                  <xsd:attribute name="alpha_test_ref" type="xsd:int" />
+                  <xsd:attribute name="src_blend" type="xsd:int" />
+                  <xsd:attribute name="dest_blend" type="xsd:int" />
+                  <xsd:attribute name="order" type="Orders" />
+                  <xsd:attribute name="transparent" type="xsd:boolean" />
+                  <xsd:attribute name="lightable" type="xsd:boolean" />
+                  <xsd:attribute name="two_sided" type="xsd:boolean" />
+                  <xsd:attribute name="scissor" type="xsd:boolean" />
+                  <xsd:attribute name="z_bias" type="xsd:float" />
+                  <xsd:attribute name="z_write" type="xsd:boolean" />
+                  <xsd:attribute name="cast_shadow" type="xsd:boolean" />
+                  <xsd:attribute name="emissive_factor" type="xsd:float" />
+                  <xsd:attribute name="ambient" type="xsd:string" />
+                  <xsd:attribute name="diffuse" type="xsd:string" />
+                  <xsd:attribute name="specular" type="xsd:string" />
+                  <xsd:attribute name="specular_power" type="xsd:float" />
+                  <xsd:attribute name="fill_mode" type="FillModes" />
+                  <xsd:attribute name="blend_operation" type="BlendingOperations" />
+                  <xsd:attribute name="z_buffer" type="xsd:boolean" />
+                </xsd:complexType>
+              </xsd:element>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required" />
+      <xsd:attribute name="author" type="xsd:string" use="optional" />
+      <xsd:attribute name="version" type="xsd:float" use="required" />
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="constant" mixed="true">
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+    <xsd:attribute name="type" type="xsd:string" />
+    <xsd:attribute name="semantic" type="xsd:string" />
+    <xsd:attribute name="dynamic" type="xsd:boolean" />
+    <xsd:attribute name="elements" type="xsd:int" use="optional" />
+  </xsd:complexType>
+  <xsd:simpleType name="Addressings">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ADDRESS_WRAP" />
+      <xsd:enumeration value="ADDRESS_CLAMP" />
+      <xsd:enumeration value="ADDRESS_BORDER" />
+      <xsd:enumeration value="ADDRESS_MIRROR" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="FillModes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="point" />
+      <xsd:enumeration value="wireframe" />
+      <xsd:enumeration value="solid" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="Orders">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="pre" />
+      <xsd:enumeration value="scene" />
+      <xsd:enumeration value="post" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="FilterTypes">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="FILTER_NONE" />
+      <xsd:enumeration value="FILTER_NEAREST" />
+      <xsd:enumeration value="FILTER_TRILINEAR" />
+      <xsd:enumeration value="FILTER_ANISOTROPIC" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="TextureFormats">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="g16r16f" />
+      <xsd:enumeration value="a8r8g8b8" />
+      <xsd:enumeration value="a2r10g10b10" />
+      <xsd:enumeration value="a1r5g5b5" />
+      <xsd:enumeration value="r5g5b5" />
+      <xsd:enumeration value="r5g6b5" />
+      <xsd:enumeration value="r8g8b8" />
+      <xsd:enumeration value="a16b16g16r16f" />
+      <xsd:enumeration value="r16f" />
+      <xsd:enumeration value="g32r32f" />
+      <xsd:enumeration value="r32f" />
+      <xsd:enumeration value="a32b32g32r32f" />
+      <xsd:enumeration value="a8" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="TextureUsages">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="render_target" />
+      <xsd:enumeration value="normal" />
+      <xsd:enumeration value="dynamic" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="BlendingOperations">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="add" />
+      <xsd:enumeration value="subtract" />
+      <xsd:enumeration value="revsubtract" />
+      <xsd:enumeration value="min" />
+      <xsd:enumeration value="max" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="VSProfiles">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="vs_1_1" />
+      <xsd:enumeration value="vs_2_0" />
+      <xsd:enumeration value="vs_2_a" />
+      <xsd:enumeration value="vs_2_b" />
+      <xsd:enumeration value="vs_3_0" />
+      <xsd:enumeration value="vs_4_0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="PSProfiles">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ps_1_1" />
+      <xsd:enumeration value="ps_1_2" />
+      <xsd:enumeration value="ps_1_3" />
+      <xsd:enumeration value="ps_1_4" />
+      <xsd:enumeration value="ps_2_0" />
+      <xsd:enumeration value="ps_2_a" />
+      <xsd:enumeration value="ps_2_b" />
+      <xsd:enumeration value="ps_3_0" />
+      <xsd:enumeration value="ps_4_0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  <xsd:simpleType name="GSProfiles">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ps_4_0" />
+    </xsd:restriction>
+  </xsd:simpleType>
+</xsd:schema>

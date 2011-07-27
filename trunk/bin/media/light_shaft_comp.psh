@@ -1,0 +1,25 @@
+// Light shaft composition pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+
+
+// Colour of the light shaft
+float3 colour = {1.0f, 1.0f, 1.0f};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 channels = tex2D(sceneTex, IN.texCoord);
+	float4 multiplier = 0.25f;
+	
+	return dot(channels, multiplier) * float4(colour, 1.0f);
+}

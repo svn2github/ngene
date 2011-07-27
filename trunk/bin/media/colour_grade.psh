@@ -1,0 +1,25 @@
+// Colour grading pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler sceneTex: register(s0);
+sampler gradingTex: register(s1);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{	
+	float4 scene = tex2D(sceneTex, IN.texCoord);
+	float4 colour = 1.0f;
+	
+	colour.r = tex2D(gradingTex, float2(scene.r, 0.5f)).r;
+	colour.g = tex2D(gradingTex, float2(scene.g, 0.5f)).g;
+	colour.b = tex2D(gradingTex, float2(scene.b, 0.5f)).b;
+	
+	return colour;
+}

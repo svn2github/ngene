@@ -1,0 +1,68 @@
+// Name: Old movie pixel shader
+// Info: use this filter to make scene look as on the old movies
+// Author: Rene Schulte
+// Adapted for nGENE by: Wojciech Toman
+
+// Copyright (C) Rene Schulte 2009
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+// Parameters
+float scratchAmount = 0.00004399f;
+float noiseAmount = 0.4f;
+float noiseScale = 0.7f;
+float2 randomCoord1 = 0.0;
+float2 randomCoord2 = 0.0;
+float frame = 0.0;
+float timer = 0.0f;
+
+// Static
+static float scratchAmountInv = 1.0 / scratchAmount;
+
+// Sampler
+sampler2D sceneTex: register(s0);
+sampler2D noiseTex: register(s1);
+
+// Shader
+float4 main(VertexOutput IN): COLOR0
+{
+    // Sample texture
+    float4 color = tex2D(sceneTex, IN.texCoord);
+
+    // Add Scratch
+    float2 sc = (timer / 8000.0) * float2(0.001f, 0.4f);
+    sc.x = frac(IN.texCoord.x + sc.x);
+    float scratch = tex2D(noiseTex, sc).r;
+    scratch = 2 * scratch * scratchAmountInv;
+    scratch = 1 - abs(1 - scratch);
+    scratch = max(0, scratch);
+    color.rgb += scratch.rrr; 
+
+    // Calculate random coord + sample
+    //float2 rCoord = (IN.texCoord + (randomCoord1 + sin(timer / 2000.0) * 0.1) + (randomCoord2 + cos(timer / 2000.0) * 0.1)) * 0.33;
+    //float3 rand = tex2D(noiseTex, rCoord);
+    float3 rand = tex2D(noiseTex, noiseScale * (IN.texCoord + sin(timer / 100.0f))).xyz;
+    // Add noise
+    if(noiseAmount < rand.r)
+    {
+        color.rgb = rand.r;//0.1 + rand.b * 0.4;
+    }
+
+    // Convert to gray + desaturated Sepia
+    float gray = dot(color, float4(0.3, 0.59, 0.11, 0)); 
+    color = float4(gray * float3(0.9, 0.8, 0.6) , 1);
+
+    // Calc distance to center
+    float2 dist = 0.5 - IN.texCoord;   
+    // Random light fluctuation
+    float fluc = (randomCoord2 + sin(timer / 50.0) * 0.1f).x * 0.04 - 0.02;
+    // Vignette effect
+    color.rgb *= (0.4 + fluc - dot(dist, dist))  * 2.8;
+
+    return color;
+}

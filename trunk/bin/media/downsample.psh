@@ -1,0 +1,39 @@
+// Downsample pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler tex: register(s1);
+
+float highlightThreshold = 0.95f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord[4]: TEXCOORD0;
+};
+
+
+float luminance(float3 colour)
+{
+	return dot(colour, float3(0.3, 0.59, 0.11));
+}
+
+
+float highlights(float3 colour)
+{
+	return smoothstep(highlightThreshold, 1.0f, luminance(colour));
+}
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 colour;
+	colour = tex2D(tex, IN.texCoord[0]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[1]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[2]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[3]) * 0.25;
+	
+	colour.a = highlights(colour.rgb);
+	
+	return colour;
+}

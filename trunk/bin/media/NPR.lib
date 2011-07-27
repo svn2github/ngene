@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<library name="default" version="0.1" author="Wojciech Toman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="materialLib.xsd">
+  <materials>
+    <material name="dotCel" cast_shadow="0">
+      <technique name="main">
+        <pass name="main">
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="0"/>
+          <vertex_shader file="dot_cel.vsh" profile="vs_2_a">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="dot_cel.psh" profile="ps_2_a"></pixel_shader>
+        </pass>
+      </technique>
+    </material>
+  </materials>
+</library>

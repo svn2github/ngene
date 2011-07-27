@@ -1,0 +1,45 @@
+sampler diffuseMap: register(s0);
+sampler normalMap: register(s1);
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 position	   : POSITION0;
+    float2 texCoord    : TEXCOORD0;
+    float3 eyeVec	   : TEXCOORD1;
+    float3 lightVec    : TEXCOORD2;
+    float3 normal 	   : TEXCOORD3;
+    float3 tangent	   : TEXCOORD4;
+    float3 binormal    : TEXCOORD5;
+};
+
+float4 PS_TexturedNormalMap(VertexOutput IN): Color
+{
+    // Calculate the diffuse color
+    float4 colour = tex2D(diffuseMap, IN.texCoord.xy);
+    
+    // Calculate the normal
+    float3 normal = bumpiness * (tex2D(normalMap, IN.texCoord.xy).xyz - (0.5f).xxx);
+
+	float3 light = normalize(-IN.lightVec);    
+    float3 norm  = normalize(IN.normal);
+    float3 tang  = normalize(IN.tangent);
+    float3 bino  = normalize(IN.binormal);
+    
+    float3 bump = norm + (normal.x * tang + normal.y * bino);
+    bump = normalize(bump);
+    
+    float3 eyeVector  = normalize(IN.eyeVec);
+    float3 halfVector = normalize(eyeVector + light);
+    
+   	float4 lighting = lit(dot(light, bump), dot(halfVector, bump), shininess);
+    float spec = lighting.z;
+    float diff = lighting.y;
+    
+    float diffComp = diff;
+    float4 diffuse = surfaceColour* colour * (diff * lightColour + ambientColour);
+    float4 specular = spec * specularColour;
+    float4 result = diffuse + specular;
+    
+    return result;
+}

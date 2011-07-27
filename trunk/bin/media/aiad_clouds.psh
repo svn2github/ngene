@@ -1,0 +1,38 @@
+// AIAD game clouds pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler cloudsMap: register(s0);
+sampler sceneMap: register(s1);
+
+float2 texCoordMult = {1.0f, 1.0f};
+
+// Timer
+float timer = 0;
+float cloudsThresh = 0.9;
+float3 cameraPos;
+float wind = 1.0f;
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position   : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+	float3 normal	  : TEXCOORD1;
+	float3 V		  : TEXCOORD2;
+	float3 positionV  : TEXCOORD3;
+};
+
+
+float4 PS_TexturedNormalMap(VertexOutput IN): COLOR0
+{
+	float2 texCoord = texCoordMult * IN.texCoord;
+	
+	float4 color = saturate(tex2D(cloudsMap, texCoord * 0.5f + float2(cameraPos.x * 0.05f, -timer * 0.000025f * wind)).rgba * cloudsThresh);
+	float4 scene = tex2D(sceneMap, texCoord).rgba;
+	
+	color = lerp(scene, color, color.x);
+	color.a = 1.0f;
+	
+	return color;
+}

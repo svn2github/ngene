@@ -1,0 +1,49 @@
+// Orwig effect pixel shader
+// Copyright (C) Wojciech Toman 2010
+// Info: orwig effect is technique used in photography post-processing
+// to soften light sources.
+
+sampler sceneTex: register(s0);
+
+
+// Blending opacity - 0.0 image will be desaturated, 1.0 full Orwig
+float amount = 1.0f;
+
+// Effect strength
+float opacity = 0.6f;
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+// Photoshop soft light blending
+float3 softLightBlend(float3 base, float3 blend)
+{
+	return ((blend < 0.5f) ? (2.0f * base * blend + base * base * (1.0f - 2.0f * blend)) :
+		(sqrt(base) * (2.0f * blend - 1.0f) + 2.0f * base * (1.0f - blend)));
+}
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 colour = 1.0f;
+	
+	float3 scene = tex2D(sceneTex, IN.texCoord).xyz;
+	
+	// First desaturate the scene
+	float3 desaturate = dot(scene, float3(0.3, 0.59, 0.11));
+	
+	// Now use soft light blending to blend desaturated image with
+	// the colourful one
+	colour.xyz = lerp(desaturate, softLightBlend(desaturate, scene), amount);
+	
+	// Blend everything with the input
+	colour.xyz = lerp(scene, colour.xyz, opacity);
+	
+	
+	return colour;
+}

@@ -1,0 +1,20 @@
+// SSAO composite pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+sampler sceneTex: register(s1);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+half4 main(VertexOutput IN): COLOR
+{	
+	half4 scene = tex2D(sceneTex, IN.texCoord);
+	half4 ssao = tex2D(diffuseTex, IN.texCoord);
+	return saturate(ssao);
+}

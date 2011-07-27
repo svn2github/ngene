@@ -1,0 +1,37 @@
+// Post-process heat and haze pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler diffuseTex: register(s0);
+sampler sceneTex: register(s1);
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+float scale = 1.0f;
+float timer = 0.0f;
+float distortion = 0.003f;
+float displacement = 15.0f;
+float temperature = 5.0f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuseMap = tex2D(diffuseTex, IN.texCoord);
+	
+	float2 texCoord = IN.texCoord + 0.5f * pixel_size * scale;
+	texCoord.x += sin(timer * 0.001f + scale * displacement * diffuseMap.a * length(diffuseMap.rgb)) * distortion * diffuseMap.a;
+	texCoord.y += cos(timer * 0.001f + scale * displacement * diffuseMap.a * length(diffuseMap.rgb)) * distortion * diffuseMap.a;
+	
+	float lum = dot(diffuseMap.xyz, float3(0.39f, 0.51f, 0.1f)) * temperature;
+	diffuseMap.xyzw *= lum;
+	
+	float4 sceneMap = tex2D(sceneTex, texCoord);
+	float3 colour = diffuseMap.xyz + diffuseMap.a * sceneMap.xyz;
+
+    return float4(colour, diffuseMap.a);
+}

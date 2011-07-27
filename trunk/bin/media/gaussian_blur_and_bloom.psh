@@ -1,0 +1,39 @@
+// Gaussian blur and bloom pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler difTexture: register(s1);
+
+
+float weight[7] =
+{
+	0.05,
+	0.1,
+	0.2,
+	0.3,
+	0.2,
+	0.1,
+	0.05
+};
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord[7]: TEXCOORD0;
+};
+
+float bloomScale = 1.5f;
+
+
+float4 main(VertexOutput IN): COLOR0
+{ 
+    float4 colour = 0.0f;   
+    for(int i = 0; i < 7; i++)
+    {
+    	colour += tex2D(difTexture, IN.texCoord[i]) * weight[i];
+    }
+
+	float alpha = tex2D(difTexture, IN.texCoord[3]).a;
+
+	return float4(colour.xyz * bloomScale, 1.0f);
+}

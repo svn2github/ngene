@@ -1,0 +1,101 @@
+// Sky pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+	float2 texCoord2  : TEXCOORD1;
+	float3 direction  : TEXCOORD2;
+	float3 positionV  : TEXCOORD3;
+};
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+};
+
+
+float3 a_A = float3(-0.2978,-0.2941999,-1.1056);
+float3 a_B = float3(-0.1322,-0.1808,-0.2833);
+float3 a_C = float3(0.2117,0.1943999,5.2797);
+float3 a_D = float3(-1.0271,-1.7419,-2.3359);
+float3 a_E = float3(0.0385999,0.0311,0.2363);
+float3x3 a_colorConvMat = float3x3(float3(3.240479,-1.53715,-0.498535),
+								   float3(-0.969256,1.875992,0.041556),
+								   float3(0.055648,-0.204043,1.0573109));
+float a_exposure = 0.1f;
+float3 a_zenithDirection = float3(0.0f, 1.0f, 0.0f);
+float3 vecSunDirection = float3(0.34202015f, 0.93969f, 0.0f);
+float2 vecThetaSun = float2(0.3490658, 0.999962);
+float3 vecZenithColor = float3(0.25909478,0.265610,7.367387);
+float mapTile = 10.0f;
+float emissive;
+
+/// Size of the sun. The larger the value the larger and brighter the sun is.
+float sunSize = 0.00001f;
+
+/// Brightness of the sun.
+float sunBrightness = 4000.0f;
+
+sampler cloudSampler: register(s0);
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float3 direction = normalize(IN.direction);
+	
+	float theta		= dot(a_zenithDirection, direction);
+	float gamma		= dot(vecSunDirection, direction);
+	float cos2gamma	= gamma * gamma;
+	
+	gamma			= acos(gamma);
+	
+	//
+	// Compute sky chromaticity values and sky luminance
+	//
+	
+	float3 num = (1.0 + a_A * exp( a_B / theta )) * (1.0 + a_C * exp( a_D * gamma ) + a_E * cos2gamma);
+	float3 den = (1.0 + a_A * exp( a_B )) * (1.0 + a_C * exp( a_D * vecThetaSun.x ) + a_E * vecThetaSun.y);
+	float3 xyY = num / den * vecZenithColor;
+	
+	//
+	// Exposure function for luminance
+	//
+	
+	xyY.z = 1.0 - exp(-a_exposure * xyY.z);
+	
+	//
+	// Convert CIE xyY to CIE XYZ
+	//
+	
+	float3 XYZ;
+	
+	XYZ.x = (xyY.x / xyY.y) * xyY.z;
+	XYZ.y = xyY.z;
+	XYZ.z = ((1.0 - xyY.x - xyY.y) / xyY.y) * xyY.z;
+	
+	PS_OUTPUT OUT;
+	float angle = exp(sin(vecThetaSun.x)) + cos(gamma) + 0.5f;
+	if(angle > 1.0f)
+		angle = 1.0f;
+	float4 diffuse = float4(mul(XYZ, a_colorConvMat), 1.0f);
+	float emission = emissive * sunBrightness * saturate(dot(float3(0.3086f, 0.6094f, 0.0820f), diffuse.xyz));
+	
+	/// + epsilon to avoid division by 0
+	emission = 1.0f + lerp(0.0f, emission, sunSize / (gamma + 0.0001));
+	
+	/// Limit emission based on clouds density...	
+//	emission -= emission * saturate(1.05-dot(float3(0.30f, 0.59f, 0.11f), tex2D(cloudSampler, IN.texCoord).xyz)) * tex2D(cloudSampler, IN.texCoord).w;
+
+	float4 clouds = tex2D(cloudSampler, IN.texCoord2);
+	
+	OUT.diffuse = float4(mul(XYZ, a_colorConvMat), 1.0f);
+	OUT.diffuse.xyz += clouds.xyz * clouds.w;
+	OUT.normal = float4(0.0f, 0.0f, 0.0f, emission);
+	OUT.position = float4(IN.positionV, 0.0f);
+	
+	return OUT;
+}

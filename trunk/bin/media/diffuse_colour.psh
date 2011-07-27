@@ -1,0 +1,54 @@
+// One-colour pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler diffuseMap: register(s0);
+sampler normalMap: register(s1);
+
+float specular_intensity = 0.16f;
+float4 colour = {1.0f, 1.0f, 1.0f, 1.0f};
+
+float4x4 matViewIT;
+
+// Emissive factor for HDR rendering
+float emissive = 0.0f;
+// What is the maximum height - it is used to change data
+// written to the G-Buffer
+//float heightScale = 0.25f;
+float heightScale = 0.0f;
+
+// ID of the material
+float materialID = 0;
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position   : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+	float3 normal	  : TEXCOORD1;
+	float3 V		  : TEXCOORD2;
+	float3 positionV  : TEXCOORD3;
+};
+
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+	float4 material: COLOR3;
+};
+
+
+PS_OUTPUT main(VertexOutput IN)
+{
+	float3 normalWorld = mul(float4(IN.normal, 0.0f), matViewIT).xyz;
+	
+	PS_OUTPUT OUT;
+	OUT.diffuse = colour;
+	OUT.normal.rgba = float4(normalize(normalWorld), emissive);
+	OUT.position = float4(IN.positionV + normalize(normalWorld) * heightScale, specular_intensity);
+	OUT.material = float4(materialID, 0.0f, 0.0f, 0.0f);
+	
+	return OUT;
+}

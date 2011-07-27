@@ -1,0 +1,73 @@
+// Name: Distance Heat Haze effect pixel shader
+// Info: distance heat haze effect is same as heat & haze but for the whole terrain.
+//		 This effect is stronger at some distance and for the brigher areas (probably
+//		 hotter ones).
+// Author: Wojciech Toman
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+// Parameters
+
+// Timer value
+float timer = 0.0f;
+
+// Position of the camera
+float3 cameraPos;
+
+// Maximum strength of the haze effect
+float maximumHaze = 0.02f;
+// Distance at which maximum haze appears
+float maximumHazeDistance = 120.0f;
+
+// Maximum height at which the effect is applied
+float maximumHazeHeight = 30.0f;
+
+// Minimum distance at which the effect is applied
+float minDistance = 20.0f;
+// Maximum distace at which the effect is applied
+float maxDistance = 250.0f;
+
+// We need this matrix to restore position in world space
+float4x4 matViewInverse;
+
+
+// Samplers
+sampler2D sceneTex: register(s0);
+sampler2D positionTex: register(s1);
+sampler2D patternTex: register(s2);
+
+
+// Shader
+float4 main(VertexOutput IN): COLOR0
+{
+    // Sample texture
+    float3 position = tex2D(positionTex, IN.texCoord).xyz;
+    
+    float3 worldPos = mul(float4(position, 1.0f), matViewInverse).xyz;
+    float distance = length(worldPos.xz - cameraPos.xz);
+    
+    float2 texCoord = IN.texCoord;
+    float2 temp = 0.0f;
+    if(worldPos.y < maximumHazeHeight && distance > minDistance && distance < maxDistance &&
+	   distance > 0.0f && texCoord.x > 0.0f && texCoord.x < 1.0f && texCoord.y > 0.0f && texCoord.y < 1.0f)
+    {
+		float luminance = dot(tex2D(sceneTex, IN.texCoord).xyz, float3(0.3f, 0.59f, 0.11f));
+		float strength = luminance * lerp(1.0f, 0.0f, worldPos.y / maximumHazeHeight);
+		
+		float tmp = tex2D(patternTex, IN.texCoord + float2(timer * 0.00009f, timer * 0.0001f)).x;
+		if(distance > maximumHazeDistance)
+			strength = lerp(strength, 0.0f, (distance - maximumHazeDistance) / (maxDistance - maximumHazeDistance));
+		texCoord += tmp * strength * saturate((distance - minDistance) / (maximumHazeDistance - minDistance)) * float2(sin(timer * 0.005f + position.x), 0.25f * cos(timer * 0.01f + position.z)) * maximumHaze;
+	}
+	
+	   
+    float4 color = tex2D(sceneTex, texCoord);
+
+    return color;
+}

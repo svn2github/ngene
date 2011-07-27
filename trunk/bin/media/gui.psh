@@ -1,0 +1,25 @@
+// GUI pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+
+float opaque = 1.0f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float4 diffuse : COLOR0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuseMap = tex2D(diffuseTex, IN.texCoord);
+	float4 colour = diffuseMap * IN.diffuse;
+	
+	colour.a *= opaque;
+	
+	return colour;
+}

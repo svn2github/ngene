@@ -1,0 +1,43 @@
+// Downsample for glow pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler tex:			register(s1);
+sampler materialBuf:	register(s2);
+sampler materialBufTex: register(s3);
+
+float glowStrength = 2.0f;
+float glowThreshold = 0.1f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord[4]: TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 colour;
+	colour = tex2D(tex, IN.texCoord[0]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[1]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[2]) * 0.25;
+	colour += tex2D(tex, IN.texCoord[3]) * 0.25;
+	
+	float4 matBuf = tex2D(materialBuf, IN.texCoord[1]);
+	float4 selective = tex2D(materialBufTex, float2(1.5f / 512.0f, (matBuf.x + 0.5f) / 512.0f));
+	
+	if(selective.x < glowThreshold &&
+	   selective.y < glowThreshold &&
+	   selective.z < glowThreshold)
+	{
+		colour.xyzw = 0.0f;
+	}
+	else
+	{
+		colour.xyz = selective.xyz;
+		colour.a = glowStrength;
+	}
+	
+	return colour;
+}

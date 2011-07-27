@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<library name="SwayingPalmMatLib" version="0.1" author="Wojciech Toman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="materialLib.xsd">
+  <materials>
+    <material name="rockyGround">
+      <technique name="main">
+        <pass name="main">
+          <texture name="rock" file="rocks.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_bump" file="rock_bump.dds" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_height" file="rock_height.jpg" sampler="2" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="paralax_map.vsh" profile="vs_3_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="paralax_map.psh" function="PS_TexturedNormalMap" profile="ps_3_0">
+            <constant name="scale" type="float" dynamic="false">0.08f</constant>
+            <constant name="bias" type="float" dynamic="false">0.03f</constant>
+            <constant name="matView" semantic="ViewInverse" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+  </materials>
+</library>

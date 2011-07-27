@@ -1,0 +1,35 @@
+// Selective colour pixel shader
+// Copyright (C) Wojciech Toman 2010
+
+sampler sceneTex:		register(s0);
+sampler materialBuf:	register(s1);
+sampler materialBufTex: register(s2);
+
+
+struct VertexOutput
+{
+	float4 hPosition : POSITION0;
+	float2 texCoord  : TEXCOORD0;
+};
+
+// Interpolation parameter to interpolate between scene
+// and selective colour
+float level = 1.0f;
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float4 matBuf = tex2D(materialBuf, IN.texCoord);
+	float4 selective = tex2D(materialBufTex, float2(0.5f / 512.0f, (matBuf.x + 0.5f) / 512.0f));
+
+	float4 colour = tex2D(sceneTex, IN.texCoord);
+	if(selective.x <= 0.5f)
+	{
+		float3 selective = dot(float3(0.3f, 0.59f, 0.11f), colour.xyz);
+		colour.xyz = lerp(colour.xyz, selective, level);
+	}
+	
+	colour.w = 1.0f;
+	
+	return colour;
+}

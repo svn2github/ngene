@@ -1,0 +1,36 @@
+// Filter bleaching the image
+// Info: use this filter to empasize contrast of the image
+// Copyright (C) Wojciech Toman 2009
+
+// Based on the nVidia shader library material
+
+sampler backTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+// Level of blending
+float opacity = 0.15;
+
+
+float4 main(VertexOutput IN): COLOR0
+{    
+    float4 color = tex2D(backTex, IN.texCoord);
+    float3 lumCoeff = float3(0.25f, 0.65f, 0.1f);
+    float lum = dot(lumCoeff, color.rgb);
+    float3 blend = lum.rrr;
+    float L = min(1,max(0,10*(lum- 0.45)));
+    float3 result1 = 2.0f * color.rgb * blend;
+    float3 result2 = 1.0f - 2.0f*(1.0f - blend) * (1.0f - color.rgb);
+    float3 newColor = lerp(result1,result2,L);
+    float A2 = opacity * color.a;
+    float3 mixRGB = A2 * newColor.rgb;
+    mixRGB += ((1.0f - A2) * color.rgb);
+    
+    return float4(mixRGB, color.a);
+}

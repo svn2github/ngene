@@ -1,0 +1,91 @@
+// Parallax mapping pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseMap: register(s0);
+sampler normalMap: register(s1);
+sampler heightMap: register(s2);
+
+
+float scale = 0.08f;			// Height scale
+float bias = 0.03f;				// Height bias
+float heightScale = 0.25f;
+float emissive = 0.0f;
+
+float specular_intensity = 0.16f;
+
+float4x4 matViewInv;
+
+// ID of the material
+float materialID = 0;
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+	float3 position	  : TEXCOORD1;
+	float3 normal	  : TEXCOORD2;
+	float3 V		  : TEXCOORD3;
+	float3 positionV  : TEXCOORD4;
+};
+
+
+float3x3 invert_3x3(float3x3 mat)
+{
+	float det = determinant(mat);
+	float3x3 T = transpose(mat);
+	return float3x3(cross(T[1], T[2]),
+					cross(T[2], T[0]),
+					cross(T[0], T[1])) / det;
+}
+
+
+float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
+{
+	float3 dp1 = ddx(P);
+	float3 dp2 = ddy(P);
+	float2 duv1 = ddx(UV);
+	float2 duv2 = ddy(UV);
+	
+	float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
+	float3x3 inverseM = invert_3x3(M);
+	float3 T = mul(inverseM, float3(duv1.x, duv2.x, 0.0f));
+	float3 B = mul(inverseM, float3(duv1.y, duv2.y, 0.0f));
+	
+	float maxLength = max(length(T), length(B));
+	
+	return float3x3(T / maxLength, B / maxLength, N);
+}
+
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+	float4 material: COLOR3;
+};
+
+
+PS_OUTPUT PS_TexturedNormalMap(VertexOutput IN)
+{
+	float3x3 tangentFrame = compute_tangent_frame(IN.normal, -IN.V, IN.texCoord);
+	
+	float height = tex2D(heightMap, IN.texCoord).r * scale - bias;
+	
+	float2 texCoord = IN.texCoord + height * mul(normalize(IN.V), tangentFrame).xy;
+	
+	float3 N = normalize(mul((2.0f * tex2D(normalMap, texCoord) - 1.0f).xyz, tangentFrame).xyz);
+	float3 normal = mul(float4(N, 0.0f), transpose(matViewInv)).xyz;
+	float4 color = tex2D(diffuseMap, texCoord);
+	
+	
+	PS_OUTPUT OUT;
+	OUT.diffuse = float4(color);
+	OUT.normal.rgba = float4(normal, emissive);
+	OUT.position = float4(IN.positionV + normalize(N) * heightScale, specular_intensity);
+	OUT.material = float4(materialID, 0.0f, 0.0f, 0.0f);
+	
+	return OUT;
+}

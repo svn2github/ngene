@@ -1,0 +1,65 @@
+// Light-directional pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+sampler positionTex: register(s1);
+sampler normalTex: register(s2);
+
+float4 lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+float lightIntensity = 1.0f;
+
+float aspect = 1.33f;
+float invTanHalfFov = 2.41f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 eyeVec: TEXCOORD1;
+	float3 lightDir: TEXCOORD2;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuse = tex2D(diffuseTex, IN.texCoord);
+	if((diffuse.x == 0.0f && diffuse.y == 0.0f && diffuse.z == 0.0f) || diffuse.w == 0.0f)
+	{
+		discard;
+		return 0;
+	}
+	
+	float3 normal;
+	normal.xyz = (tex2D(normalTex, IN.texCoord)).xyz;
+	
+	if(length(normal) <= 0.01f)
+	{
+		discard;
+		return 0.0f;
+	}
+	else
+	{
+		float4 parameters = tex2D(positionTex, IN.texCoord);
+		float3 position = parameters.xyz;
+		
+		float3 V = -IN.eyeVec;
+		float3 lightDir = IN.lightDir;
+		float3 H = normalize(lightDir + V);
+		
+		float shininess = 0.5f;
+		float specular_intensity = parameters.w;
+		float e = shininess * 64;
+		float kD = saturate(dot(normal, normalize(lightDir)));
+		float kS = kD * specular_intensity * pow( saturate( dot( normal, H ) ), e ) * sqrt( ( e + 1 ) / 2 );
+		
+		float3 emission = float4(diffuse.xyz * tex2D(normalTex, IN.texCoord).w * (saturate(dot(normal, lightDir)) + 0.0001f), 1.0f).xyz;
+		diffuse.xyz += emission * kS;
+		
+		float4 colour = lightIntensity * (lightColour * diffuse.xyzw * 
+			saturate(dot(normal, normalize(lightDir))) + kS);
+		colour.a = 1.0f;
+		
+		return colour;
+	}
+}

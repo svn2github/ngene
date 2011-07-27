@@ -1,0 +1,241 @@
+// Parallax occlusion mapping pixel shader
+sampler diffuseMap: register(s0);
+sampler heightMap: register(s1);
+
+float scale = 0.08f;			// Height scale
+float minSamples = 15;
+float maxSamples = 50;
+float heightScale = 0.25f;
+
+float emissive = 0.0f;
+float specular_intensity = 0.16f;
+float3 lightDir;
+
+// ID of the material
+float materialID = 0;
+
+float4x4 matViewInv;
+float4x4 matView;
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+    float3 position	  : TEXCOORD1;
+    float3 normal	  : TEXCOORD2;
+    float3 view		  : TEXCOORD3;
+    float3 positionV  : TEXCOORD4;
+};
+
+float3x3 invert_3x3(float3x3 mat)
+{
+	float det = determinant(mat);
+	float3x3 T = transpose(mat);
+	return float3x3(cross(T[1], T[2]),
+					cross(T[2], T[0]),
+					cross(T[0], T[1])) / det;
+}
+
+float3x3 compute_tangent_frame(float3 N, float3 P, float2 UV)
+{
+	float3 dp1 = ddx(P);
+	float3 dp2 = ddy(P);
+	float2 duv1 = ddx(UV);
+	float2 duv2 = ddy(UV);
+	
+	float3x3 M = float3x3(dp1, dp2, cross(dp1, dp2));
+	float3x3 inverseM = invert_3x3(M);
+	float3 T = mul(inverseM, float3(duv1.x, duv2.x, 0.0f));
+	float3 B = mul(inverseM, float3(duv1.y, duv2.y, 0.0f));
+	
+	float maxLength = max(length(T), length(B));
+	return float3x3(T / maxLength, B / maxLength, N);
+}
+
+struct PS_OUTPUT
+{
+	float4 diffuse: COLOR0;
+	float4 normal: COLOR1;
+	float4 position: COLOR2;
+	float4 material: COLOR3;
+};
+
+PS_OUTPUT PS_TexturedNormalMap(VertexOutput IN)
+{
+	float3x3 tangentFrame = compute_tangent_frame(IN.normal, -IN.view, IN.texCoord);
+	
+	float3 view = mul(tangentFrame, IN.view);
+	float2 vParallaxDirection = normalize(view.xy);
+	
+	float fLength = length(view);
+	
+	float fParallaxLength = sqrt(fLength * fLength - view.z * view.z) / view.z; 
+	
+	float2 vParallaxOffset = vParallaxDirection * fParallaxLength;
+	vParallaxOffset *= scale;
+	
+	float2 fTexCoordsPerSize = IN.texCoord;
+	
+	float2 dxSize, dySize;
+	float2 dx, dy;
+
+	float4 (dxSize, dx) = ddx(float4(fTexCoordsPerSize, IN.texCoord));
+	float4 (dySize, dy) = ddy(float4(fTexCoordsPerSize, IN.texCoord));
+                  
+	float fMipLevel;
+	float fMipLevelInt;    // mip level integer portion
+	float fMipLevelFrac;   // mip level fractional amount for blending in between levels
+
+	float  fMinTexCoordDelta;
+	float2 dTexCoords;
+
+	// Find min of change in u and v across quad: compute du and dv magnitude across quad
+	dTexCoords = dxSize * dxSize + dySize * dySize;
+
+	// Standard mipmapping uses max here
+	fMinTexCoordDelta = max(dTexCoords.x, dTexCoords.y);
+
+	// Compute the current mip level  (* 0.5 is effectively computing a square root before )
+	fMipLevel = max(0.5f * log2( fMinTexCoordDelta ), 0.0f);
+	
+	// Start the current sample located at the input texture coordinate, which would correspond
+   	// to computing a bump mapping result:
+   	float2 texSample = IN.texCoord;
+   
+   	// Multiplier for visualizing the level of detail (see notes for 'nLODThreshold' variable
+   	// for how that is done visually)
+   	//float4 cLODColoring = float4( 1, 1, 3, 1 );
+
+   	float fOcclusionShadow = 1.0f;
+   	
+   	float3 viewWS = normalize(IN.view);
+   	float3 normalWS = normalize(IN.normal);
+   	
+   	
+   	int nNumSteps = (int)lerp(maxSamples, minSamples, dot(viewWS, normalWS));
+   	
+   	float fCurrHeight = 0.0;
+	float fStepSize   = 1.0 / (float)nNumSteps;
+	float fPrevHeight = 1.0;
+	float fNextHeight = 0.0;
+
+	int    nStepIndex = 0;
+	bool   bCondition = true;
+
+	float2 vTexOffsetPerStep = fStepSize * vParallaxOffset;
+	float2 vTexCurrentOffset = IN.texCoord;
+	float  fCurrentBound     = 1.0;
+	float  fParallaxAmount   = 0.0;
+
+	float2 pt1 = 0;
+	float2 pt2 = 0;
+   
+	float2 texOffset2 = 0;
+	
+	while(nStepIndex < nNumSteps) 
+    {
+    	vTexCurrentOffset -= vTexOffsetPerStep;
+
+        // Sample height map which in this case is stored in the alpha channel of the normal map:
+        fCurrHeight = tex2Dgrad(heightMap, vTexCurrentOffset, dx, dy).a;
+
+        fCurrentBound -= fStepSize;
+
+        if(fCurrHeight > fCurrentBound) 
+        {   
+           pt1 = float2(fCurrentBound, fCurrHeight);
+           pt2 = float2(fCurrentBound + fStepSize, fPrevHeight);
+
+           texOffset2 = vTexCurrentOffset - vTexOffsetPerStep;
+           nStepIndex = nNumSteps + 1;
+        }
+        else
+        {
+           nStepIndex++;
+           fPrevHeight = fCurrHeight;
+        }
+	}
+
+	float fDelta2 = pt2.x - pt2.y;
+    float fDelta1 = pt1.x - pt1.y;
+      
+    float fDenominator = fDelta2 - fDelta1;
+      
+    // SM 3.0 requires a check for divide by zero, since that operation will generate
+    // an 'Inf' number instead of 0, as previous models (conveniently) did:
+    if(fDenominator == 0.0f)
+    {
+		fParallaxAmount = 0.0f;
+	}
+	else
+	{
+		fParallaxAmount = (pt1.x * fDelta2 - pt2.x * fDelta1 ) / fDenominator;
+	}
+	  
+    vParallaxOffset *= (1.0f - fParallaxAmount);
+
+    // The computed texture offset for the displaced point on the pseudo-extruded surface:
+    texSample = IN.texCoord - vParallaxOffset;
+
+    // Lerp to bump mapping only if we are in between, transition section:
+        
+/*    cLODColoring = float4( 1, 1, 1, 1 ); 
+
+      if ( fMipLevel > (float)(g_nLODThreshold - 1) )
+      {
+         // Lerp based on the fractional part:
+         fMipLevelFrac = modf( fMipLevel, fMipLevelInt );
+
+         if ( g_bVisualizeLOD )
+         {
+            // For visualizing: lerping from regular POM-resulted color through blue color for transition layer:
+            cLODColoring = float4( 1, 1, max( 1, 2 * fMipLevelFrac ), 1 ); 
+         }
+
+         // Lerp the texture coordinate from parallax occlusion mapped coordinate to bump mapping
+         // smoothly based on the current mip level:
+         texSample = lerp( texSample, i.texCoord, fMipLevelFrac );
+
+     }  // End of if ( fMipLevel > fThreshold - 1 )
+*/
+      
+      // Shadows
+     	float3 vLightTS = mul(-lightDir, tangentFrame).xyz; 
+        float2 vLightRayTS = vLightTS.xy * scale;
+      
+        // Compute the soft blurry shadows taking into account self-occlusion for 
+        // features of the height field:
+        float g_fShadowSoftening = 0.1f;
+   
+        float sh0 =  tex2Dgrad( heightMap, texSample, dx, dy ).a;
+        float shA = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.88, dx, dy ).a - sh0 - 0.88 ) *  1 * g_fShadowSoftening;
+        float sh9 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.77, dx, dy ).a - sh0 - 0.77 ) *  2 * g_fShadowSoftening;
+        float sh8 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.66, dx, dy ).a - sh0 - 0.66 ) *  4 * g_fShadowSoftening;
+        float sh7 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.55, dx, dy ).a - sh0 - 0.55 ) *  6 * g_fShadowSoftening;
+        float sh6 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.44, dx, dy ).a - sh0 - 0.44 ) *  8 * g_fShadowSoftening;
+        float sh5 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.33, dx, dy ).a - sh0 - 0.33 ) * 10 * g_fShadowSoftening;
+        float sh4 = (tex2Dgrad( heightMap, texSample + vLightRayTS * 0.22, dx, dy ).a - sh0 - 0.22 ) * 12 * g_fShadowSoftening;
+   
+        // Compute the actual shadow strength:
+        fOcclusionShadow = 1.0f - max( max( max( max( max( max( shA, sh9 ), sh8 ), sh7 ), sh6 ), sh5 ), sh4 );
+      
+        // The previous computation overbrightens the image, let's adjust for that:
+        fOcclusionShadow = fOcclusionShadow * 0.6 + 0.4; 
+
+
+	float3 N = normalize(mul((2.0f * tex2D(heightMap, texSample) - 1.0f).xyz, tangentFrame)).xyz;
+	float3 normalWorld = normalize(mul(float4(N, 0.0f), transpose(matViewInv))).xyz;
+	float3 color = tex2D(diffuseMap, texSample).rgb;
+	
+
+	PS_OUTPUT OUT;
+	OUT.diffuse = fOcclusionShadow * float4(color, viewWS.x);
+	OUT.normal.rgba = float4(normalWorld, emissive);
+	float3 positionV = IN.position + normalize(N) * heightScale - fCurrHeight;
+	positionV	 = mul(float4(positionV, 1.0f), matView).xyz;
+	OUT.position = float4(positionV, specular_intensity);
+	OUT.material = float4(materialID, 0.0f, 0.0f, 0.0f);
+	
+	return OUT;
+}

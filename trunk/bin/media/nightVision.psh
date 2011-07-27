@@ -1,0 +1,59 @@
+// Night vision pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+sampler noiseTex: register(s1);
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+
+float timer = 0.0f;
+float noiseScale = 0.4f;
+float3 cameraPos;
+float radius = 0.5f;
+float2 center = {0.5f, 0.5f};
+float aspect = 1.0f;
+
+/// Strength of the amplification effect
+float brightenFactor = 2.0f;
+float fadeRadius = 0.05f;
+float luminanceThreshold = 0.2f;
+
+/// Colour of image outside of night vision device
+float3 blackColour = {0.1f, 0.1f, 0.1f};
+
+/// Colour of the night vision (default is almost green)
+float3 visionColour = {0.1, 0.95, 0.2};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float3 scene = tex2D(sceneTex, IN.texCoord).rgb;
+
+    float3 result = 0.0f;
+    
+    float2 texCoord = IN.texCoord;
+    texCoord.x *= aspect;
+    float2 pos = center;
+    pos.x *= aspect;
+    float distance = length(texCoord - pos);
+    if(distance >= radius)
+		result = blackColour * scene;
+	else
+	{
+		float luminance = dot(scene, float3(0.3f, 0.59f, 0.11f));
+		if(luminance < luminanceThreshold)
+			scene *= brightenFactor;
+	
+		result.xyz = saturate(scene * visionColour + tex2D(noiseTex, noiseScale * (IN.texCoord + sin(timer / 100.0f))).xyz * float3(0.0f, 1.0f, 0.0f));
+		if(distance >= radius - fadeRadius)
+			result.rgb = lerp(result.rgb, blackColour * scene, 1.0f - ((radius - distance) / fadeRadius));
+	}
+
+    return float4(result, 1.0f);
+}

@@ -1,0 +1,23 @@
+// Luminance scene pass pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+sampler sceneTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+	float2 texCoord   : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR
+{
+	float3 color = tex2D(sceneTex, IN.texCoord).xyz;
+	
+	//convert to luminance
+	float lum = dot(color, float3(0.3086f, 0.6094f, 0.0820f));
+	float logLum = log(0.001f + lum);  //used to prevent numerical underflow of log(0)
+	
+	return float4(lum, logLum, 0.0f, 0.0f);
+}

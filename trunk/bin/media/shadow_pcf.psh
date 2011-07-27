@@ -1,0 +1,84 @@
+// Shadow map preprocessing pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+// Samplers
+sampler shadowTex: register(s0);
+sampler depthTex: register(s1);
+
+
+float4x4 matTexture;
+// Depth offset
+float shadowBias = 0.005f;
+// Transparency of the shadows (0.0 - opaque; 1.0 - fully transparent)
+float shadowDensity = 0.2f;
+// Depth beyond which shadows are not applied.
+float depthThresh = 100.0f;
+
+
+// VertexShader results
+struct VertexOutput
+{
+    float4 position   : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+    float3 eyeVec	  : TEXCOORD1;
+};
+
+// Texel size
+float texelSize = 1.0f / 512.0f;
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float3 position = tex2D(depthTex, IN.texCoord).rgb;
+	if(position.z > depthThresh)
+		return 1.0f;
+	else
+	{
+		float4 texCoord = mul(float4(position, 1.0f), matTexture);
+		float4 result = 1.0f;
+		
+		float sceneDepth = texCoord.z / abs(texCoord.w);
+		texCoord.xy /= texCoord.w;
+		
+		float4 vTexCoords[9];
+		vTexCoords[0] = texCoord;
+		vTexCoords[1] = texCoord + float4( -texelSize, 0.0f, 0.0f, 0.0f );
+		vTexCoords[2] = texCoord + float4(  texelSize, 0.0f, 0.0f, 0.0f );
+		vTexCoords[3] = texCoord + float4( 0.0f, -texelSize, 0.0f, 0.0f );
+		vTexCoords[6] = texCoord + float4( 0.0f,  texelSize, 0.0f, 0.0f );
+		vTexCoords[4] = texCoord + float4( -texelSize, -texelSize, 0.0f, 0.0f );
+		vTexCoords[5] = texCoord + float4(  texelSize, -texelSize, 0.0f, 0.0f );
+		vTexCoords[7] = texCoord + float4( -texelSize,  texelSize, 0.0f, 0.0f );
+		vTexCoords[8] = texCoord + float4(  texelSize,  texelSize, 0.0f, 0.0f );
+
+		float shadowTerm = 0.0f;
+		for(int i = 0; i < 9; i++)
+		{
+			float2 temp = vTexCoords[i].xy;
+			if(temp.x <= 1.0 && temp.y <= 1.0 && temp.x >= 0 && temp.y >= 0)
+			{
+				float shadowDepth = tex2D(shadowTex, temp).r;
+				if(shadowDepth == 0.0f)
+					shadowTerm += 1.0f;
+				else
+				{
+					float pixelDepth = sceneDepth - shadowBias;
+
+					// Texel is shadowed
+					if(abs(pixelDepth - shadowDepth) < depthThresh / texCoord.w)
+						shadowTerm += shadowDepth < pixelDepth ? shadowDensity : 1.0f;
+					else
+						shadowTerm += 1.0f;
+				}
+			}
+			else
+			{
+				shadowTerm += 1.0f;
+			}
+		}
+		
+		// Get the average
+		result = shadowTerm / 9.0f;
+
+		return result;
+	}
+}

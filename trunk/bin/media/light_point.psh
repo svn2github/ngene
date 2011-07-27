@@ -1,0 +1,70 @@
+// Point-light pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+sampler diffuseTex: register(s0);
+sampler positionTex: register(s1);
+sampler normalTex: register(s2);
+
+float4 lightColour = {1.0f, 1.0f, 1.0f, 1.0f};
+float4 ambient = {0.1f, 0.1f, 0.1f, 1.0f};
+float3 lightRadius = {5.0f, 5.0f, 5.0f};
+float lightIntensity = 1.0f;
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 lightPosition: TEXCOORD1;
+	float3 eyeVec: TEXCOORD2;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float4 diffuse = tex2D(diffuseTex, IN.texCoord);
+	if((diffuse.x == 0.0f && diffuse.y == 0.0f && diffuse.z == 0.0f) || diffuse.w == 0.0f)
+	{
+		discard;
+		return 0.0f;
+	}
+	
+	float3 normal;
+	normal.xyz = (tex2D(normalTex, IN.texCoord)).xyz;
+	
+	if(length(normal) <= 0.01f)
+	{
+		discard;
+		return 0.0f;
+	}
+	
+	float3 position;
+	float4 parameters = tex2D(positionTex, IN.texCoord);
+	position = parameters.xyz;
+	
+	float3 lightPosition = IN.lightPosition;
+	float3 lightDir = float3(lightPosition - position);
+	lightDir /= lightRadius.x;
+	float Attenuation = saturate(1.0f - dot(lightDir, lightDir));
+	lightDir = normalize(lightDir);
+	
+	float3 V = -IN.eyeVec;
+	
+	float3 H = normalize(lightDir + V);
+	
+	normal = normalize(normal);
+	float shininess = 0.5f;
+	float specular_intensity = parameters.w;
+	float e = shininess * 64;
+	float kD = saturate( dot(normal, lightDir ) ); 
+	float kS = kD * specular_intensity * pow( saturate( dot(normal, H) ), e ) * sqrt( ( e + 1 ) * 0.5f );
+	
+	float3 emission = float4(diffuse.xyz * tex2D(normalTex, IN.texCoord).w * (saturate(dot(normal, lightDir)) + 0.0001f), 1.0f).xyz;
+	diffuse.xyz += emission * kS;
+	
+	float4 colour = lightIntensity * (Attenuation + 0.001f) * (ambient + diffuse * lightColour *
+						saturate(dot(normal, lightDir) + 0.0001f) + kS);
+	colour.a = 1.0f;
+	
+	return colour;
+}

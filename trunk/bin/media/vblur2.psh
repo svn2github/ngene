@@ -1,0 +1,57 @@
+// Gaussian blur pixel shader
+// Copyright (C) Wojciech Toman 2007
+
+sampler aoTex: register(s1);
+
+
+float2 PixelKernel[13] =
+{
+    { 0, -6 },
+    { 0, -5 },
+    { 0, -4 },
+    { 0, -3 },
+    { 0, -2 },
+    { 0, -1 },
+    { 0,  0 },
+    { 0,  1 },
+    { 0,  2 },
+    { 0,  3 },
+    { 0,  4 },
+    { 0,  5 },
+    { 0,  6 },
+};
+
+static const float BlurWeights[13] = 
+{
+    0.002216,
+    0.008764,
+    0.026995,
+    0.064759,
+    0.120985,
+    0.176033,
+    0.199471,
+    0.176033,
+    0.120985,
+    0.064759,
+    0.026995,
+    0.008764,
+    0.002216,
+};
+
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+
+float4 PS_GaussianBlur(VertexOutput IN): COLOR0
+{
+    float4 colour = 0;
+    
+    for(int i = 0; i < 13; i++)
+ 	  	colour += tex2D(aoTex, IN.texCoord + PixelKernel[i].xy * 0.5 / 600) * BlurWeights[i];
+
+    return colour;
+}

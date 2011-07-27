@@ -1,0 +1,133 @@
+// Cloud HDR pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+/** NOTE:
+		Any variable changes in this shader should also be made in
+		cloud_density.psh!!!
+*/
+
+sampler diffuseTex: register(s0);
+sampler diffuseTex2: register(s1);
+sampler diffuseTexDest: register(s2);
+
+float timer = 0.0f;
+
+/** Sky cloudiness level:
+	1.0 - no clouds
+	0.0 - sky is totally clouded
+*/
+float cloudCover = 0.45f;
+
+/** The higher the value, the more "delicate" clouds
+	will be.
+*/ 
+float cloudSharpness = 0.94f;
+
+/** Cloud density:
+	- < 0.025 - light, regular clouds
+	- [0.025, 0.05] - moderate clouds
+	- > 0.05 - very heavy, storm clouds
+*/
+float cloudDensity = 0.02;
+
+float changeSpeed = 5.5f;
+
+
+float3 lightDir = {0.0f, -1.0f, 0.0f};
+float3 SunColor = {1.0f, 1.0f, 1.0f};
+
+float horizonLevel = 0.0f;
+float horizonHeight = 10.0f;
+
+// Scaling the texture have result of making clouds smaller/bigger
+float textureScaling = 1.0f;
+
+// 10 iterations usually work ok.
+static const int iterationsNum = 10;
+
+
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+	float3 normal: TEXCOORD1;
+};
+
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float2 sun = (-normalize(lightDir).xz + 1.0f) * 0.5f;
+	sun.x = 0.5f;
+	
+	float2 texCoord = IN.texCoord;
+	float color = 0;
+	for(int i = 0; i < iterationsNum; i++)
+	{
+		float mult = textureScaling * pow(2.0, i);
+		float mult2 = pow(0.5, i + 1);
+		if(i == (iterationsNum - 1))
+			mult2 = pow(0.5, i);
+		color += lerp(tex2D(diffuseTex2, texCoord * mult).a,
+					  tex2D(diffuseTexDest, texCoord * mult).a,
+					  timer) * mult2;
+	}
+	
+	color = max(color - cloudCover, 0.0f);
+	color *= 255.0f;
+	
+	float4 Result = 0.0f;
+	if(color > 0.0f)
+	{
+		float scattering = 0.0;
+		float3 endPos = float3(IN.texCoord.x, IN.texCoord.y, -color * 0.5f);
+		
+		float3 dir = endPos - float3(0.5f, 0.5f, 512);
+		dir = normalize(dir);
+		float3 curTracePos = float3(0.5f, 0.5f, 512) + dir * 384.0f;
+		
+		color = 1.0f - pow(abs(cloudSharpness), color);
+		
+		dir *= 2.0f;
+		for(int i = 0; i < 64; i++)
+		{
+			float height = tex2D(diffuseTex, curTracePos.xy).r * 255.0f;
+			scattering += 0.1 * step(curTracePos.z * 2, height * 2) * (height / curTracePos.z) * cloudDensity;
+			curTracePos += dir;
+		}
+		
+		scattering = 1.0f / exp(scattering * 0.4f);
+	
+		float2 SunRay2D = IN.texCoord.xy - sun;
+		float SunDist2D = length(SunRay2D);
+	
+	    float3 ShadeColor = lerp(SunColor * scattering,
+	    						 scattering,
+	    						 SunDist2D);
+	    float Opacity = 2.0f - SunDist2D;
+	
+	    // Simulate forward scattering of backlit clouds.
+	    float3 ShadeColorTweaked = max(ShadeColor - 0.75f, float3(0,0,0));
+	    ShadeColor += ShadeColorTweaked * max(1.0f - SunDist2D * 16.0f, 0);
+	
+	    // Simulate cloud to eye ray light scattering.
+	    /*Result = lerp(float4(ShadeColor, Opacity * saturate(color + 0.0)),
+					  float4(saturate(ShadeColor + 0.2), (1.1 - ShadeColor.r) * saturate(color + 0.0)),
+					  saturate(float4(SunDist2D * changeSpeed, SunDist2D * changeSpeed, SunDist2D * changeSpeed, SunDist2D)));*/
+		float texr = color.r;
+		Result = lerp(
+            float4(ShadeColor, texr * Opacity), // Zenith color
+            float4(1, 1, 1, ShadeColor.r * texr), // Horizon color
+            SunDist2D * 0.5
+        );
+
+		Result = saturate(Result);
+		float invY = 1.0f - IN.texCoord.y;
+		if(invY <= horizonLevel + horizonHeight)
+			Result = lerp(0.0f, Result, saturate((invY - horizonLevel) / (horizonHeight - horizonLevel)));
+	}
+
+	return Result;
+}

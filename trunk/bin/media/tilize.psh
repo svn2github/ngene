@@ -1,0 +1,62 @@
+// Filter making tiles of the scene
+// Copyright (C) Wojciech Toman 2009
+
+// Based on the nVidia shader library material (post tiles)
+
+sampler backTex: register(s0);
+
+
+struct VertexOutput
+{
+	float4 hPosition  : POSITION0;
+    float2 texCoord   : TEXCOORD0;
+};
+
+
+// Number of tiles along x and y axes
+float2 tilesNum = {40.0f, 30.0f};
+
+// Color of the edges. If you want to make them
+// transparent and thus having simply large pixels
+// use 1.0 for all components
+float3 edgeColor = {0.7f, 0.7f, 0.7f};
+
+// Threshold for borders
+float threshold = 0.15;
+
+
+float4 main(VertexOutput IN): COLOR0
+{    
+    float2 size = 1.0 / tilesNum;
+    float2 pixel_base = IN.texCoord - fmod(IN.texCoord, size);
+    float2 pixel_centre = pixel_base + (size * 0.5);
+    
+    float2 st = (IN.texCoord - pixel_base) * tilesNum;
+    float4 color1 = (float4)0;
+    float4 color2 = (float4)0;
+    float4 invOff = float4((1.0 - edgeColor), 1.0);
+    
+    if(st.x > st.y)
+    	color1 = invOff;
+    float thresholdInv =  1.0 - threshold;
+    if(st.x > thresholdInv)
+    	color2 = color1;
+    if(st.y > thresholdInv)
+    	color2 = color1;
+    float4 cBottom = color2;
+    
+    color1 = (float4)0;
+    color2 = (float4)0;
+    if(st.x > st.y)
+    	color1 = invOff;
+    if(st.x < threshold)
+    	color2 = color1;
+    if(st.y < threshold)
+    	color2 = color1;
+    float4 cTop = color2;
+    
+    float4 tileColor = tex2D(backTex, pixel_centre);
+    float4 result = tileColor + cTop - cBottom;
+    
+    return result;
+}

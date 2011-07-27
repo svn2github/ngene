@@ -1,0 +1,91 @@
+// Light-shaft pixel shader
+// Copyright (C) Wojciech Toman 2009
+
+struct VertexOutput
+{
+	float4 hPosition:POSITION0;
+	float4 diffuse : COLOR0;
+	float4 texCoordProj: TEXCOORD0;
+	float4 texCoordProjAdj: TEXCOORD1;
+	float4 positionV: TEXCOORD2;
+	float4 texCoordProjScroll1: TEXCOORD3;
+	float4 texCoordProjScroll2: TEXCOORD4;
+};
+
+
+sampler cookieTex: register(s0);
+sampler noiseTex: register(s1);
+sampler shadowTex: register(s2);
+
+// Is cookie texture used?
+bool isCookie = true;
+// Is shadow mapping used?
+bool isShadow = true;
+// Is noise used?
+bool isNoise = true;
+
+float spotExponent = 50.0f;
+float constantAttenuation = 0.05f;
+float linearAttenuation = 0.25f;
+float quadraticAttenuation = 0.0125f;
+
+// Light field of view
+float fov = 0.25f;
+float fractionOfMaxShells = 1.0f;
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float compositeNoise = 0.05f;
+	
+	if(isNoise)
+	{
+		float4 noise1 = tex2Dproj(noiseTex, IN.texCoordProjScroll1);
+		float4 noise2 = tex2Dproj(noiseTex, IN.texCoordProjScroll2);
+		
+		compositeNoise = noise1.r * noise2.g * 0.05f;
+	}
+	
+	float4 cookie = 1.0f;
+	if(isCookie)
+		cookie = tex2Dproj(cookieTex, IN.texCoordProj);
+		
+	float dist = sqrt(dot(IN.positionV.xyz, IN.positionV.xyz));
+	float3 lightDir = float3(0.0f, 0.0f, 1.0f);
+	float spotEffect = dot(lightDir, normalize(IN.positionV.xyz));
+	float attenuation = 0.0f;
+	
+	if(spotEffect > fov)
+	{
+		spotEffect = pow(abs(spotEffect), spotExponent);
+		attenuation = spotEffect / (constantAttenuation +
+									linearAttenuation * dist +
+									quadraticAttenuation * dist * dist);
+	}
+	else
+	{
+		discard;
+		return 0;
+	}
+	
+	
+	float shadow = 1.0f;
+	if(isShadow)
+	{
+		float shadowMapDepth = tex2Dproj(shadowTex, IN.texCoordProjAdj).r;
+		float sceneDepth = IN.texCoordProjAdj.z / IN.texCoordProjAdj.w;
+		if(sceneDepth < shadowMapDepth)
+		{
+			shadow = 1.0f;
+		}
+		else
+		{
+			shadow = 0.0f;
+		}
+	}
+	
+	float scale = 9.0f / fractionOfMaxShells;
+	float intensity = attenuation * compositeNoise * scale * shadow * cookie.r;
+	
+	return intensity;
+}

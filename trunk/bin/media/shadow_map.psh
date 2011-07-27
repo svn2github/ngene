@@ -1,0 +1,17 @@
+// Shadow map preprocessing pixel shader
+// Copyright (C) Wojciech Toman 2008
+
+// VertexShader results
+struct VertexOutput
+{
+	float4 position  : POSITION0;
+	float4 positionV : TEXCOORD0;
+};
+
+
+float4 main(VertexOutput IN): COLOR0
+{
+	float depth = IN.positionV.z / IN.positionV.w;
+	
+	return depth;
+}

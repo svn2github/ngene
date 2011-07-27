@@ -1,0 +1,1675 @@
+<?xml version="1.0"?>
+<library name="default" version="0.1" author="Wojciech Toman" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="materialLib.xsd">
+  <textures>
+    <texture name="shadowDepth" usage="render_target" format="r32f" width_ratio="512" height_ratio="512" />
+    <texture name="density_map" usage="render_target" format="a8r8g8b8" width_ratio="1024" height_ratio="1024" />
+    <texture name="cloud_cover_map" usage="render_target" format="a8r8g8b8" width_ratio="512" height_ratio="512" />
+  </textures>
+
+  <materials>
+    <material name="debug_point" lightable="0" cast_shadow="0">
+      <technique name="main">
+        <pass name="main">
+          <vertex_shader file="non_lightable_not_textured.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="shadow_map" z_write="true">
+      <technique name="main">
+        <pass name="main">
+          <sampler name="shadowDepth" sampler="0" clear_depth="true" bind_as_texture="0" />
+          <vertex_shader file="shadow_map.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="shadow_map.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="shadow_pcf" transparent="false" z_write="false">
+      <technique name="main">
+        <pass name="main">
+          <texture name="shadow_pcf" sampler="0" usage="render_target" format="a8r8g8b8" width_ratio="1.0" height_ratio="1.0"/>
+          <texture name="shadowDepth" sampler="0" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" bind_as_texture="1" />
+          <texture name="position" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"/>
+          <vertex_shader file="shadow_pcf.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" dynamic="1" />
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0" />
+            <constant name="aspect" semantic="Aspect" dynamic="0" />
+          </vertex_shader>
+          <pixel_shader file="shadow_pcf.psh" profile="ps_3_0">
+            <constant name="shadowDensity" semantic="ShadowDensity" dynamic="0" />
+          </pixel_shader>
+        </pass>
+        <pass name="composition">
+          <sampler name="shadow_pcf" sampler="0" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <sampler name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" />
+          </vertex_shader>
+          <pixel_shader file="shadow_comp.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="light_shaft" src_blend="2" dest_blend="2" transparent="true" order="post" two_sided="1" z_write="false" cast_shadow="0">
+      <technique name="main">
+        <pass name="main" order="scene">
+          <texture name="shaft_target" width_ratio="1.0" height_ratio="1.0" usage="render_target" format="a8r8g8b8" sampler="0"/>
+          <texture name="cookie" file="gobo.jpg" sampler="0" addressing_mode="ADDRESS_CLAMP" />
+          <texture name="scrolling_noise" file="noise_shaft.tga" sampler="1" addressing_mode="ADDRESS_WRAP" />
+          <texture name="shadowDepth" sampler="2" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="billboard_lightshaft.vsh" profile="vs_2_0">
+            <constant name="matProj" semantic="CameraProjection" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="lightshaft.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="shaft_target" sampler="0" />
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="light_shaft_comp.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="noPost">
+      <technique name="main">
+        <pass name="diffuse">
+          <texture name="BackBuffer" sampler="0" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"/>
+          <vertex_shader file="diffuse.vsh" profile="vs_2_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="diffuse.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="normalMap" cast_shadow="1" emissive_factor="10">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="rock" file="rock.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_bump" file="rock_bump.dds" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="matWorldView" semantic="WorldView" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="house_wood" cast_shadow="1" two_sided="1" emissive_factor="100">
+      <technique name="main">
+        <pass name="main">
+          <texture name="wood" file="wood.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1" addressing_mode="ADDRESS_MIRROR"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="fur" transparent="1" src_blend="5" dest_blend="6" cast_shadow="0">
+      <technique name="main">
+        <pass name="shell">
+          <texture name="fur_pattern" file="fur.jpg" sampler="1" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="fur_mask" file="fur_mask.jpg" sampler="2" addressing_mode="ADDRESS_MIRROR"/>
+          <vertex_shader file="fur.vsh" profile="vs_2_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="fur.psh" profile="ps_2_a" function="main">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="fur_base" cast_shadow="1">
+      <technique name="main">
+        <pass name="main">
+          <texture name="fur_pattern" file="fur.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="debug_aabb" cast_shadow="0" fill_mode="wireframe" two_sided="1" lightable="0">
+      <technique name="main">
+        <pass name="main">
+          <vertex_shader file="debug_aabb.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="colour" type="float4" dynamic="1">1.0 0.5 1.0 1.0</constant>
+          </vertex_shader>
+          <pixel_shader file="debug_aabb.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="debug_axis_red" cast_shadow="0" lightable="0" z_write="0" z_buffer="0">
+      <technique name="main">
+        <pass name="main">
+          <vertex_shader file="debug_aabb.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="colour" type="float4" dynamic="1">1.0 0.0 0.0 1.0</constant>
+          </vertex_shader>
+          <pixel_shader file="debug_aabb.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="debug_axis_green" cast_shadow="0" lightable="0" z_write="0" z_buffer="0">
+      <technique name="main">
+        <pass name="main">
+          <vertex_shader file="debug_aabb.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="colour" type="float4">0.0 1.0 0.0 1.0</constant>
+          </vertex_shader>
+          <pixel_shader file="debug_aabb.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="debug_axis_blue" cast_shadow="0" lightable="0" z_write="0" z_buffer="0">
+      <technique name="main">
+        <pass name="main">
+          <vertex_shader file="debug_aabb.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="colour" type="float4">0.0 0.0 1.0 1.0</constant>
+          </vertex_shader>
+          <pixel_shader file="debug_aabb.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="water" order="post" cast_shadow="false" z_write="false">
+      <technique name="main">
+        <pass name="water">
+          <texture name="water_height" file="water_height.jpg" sampler="0" addressing_mode="ADDRESS_MIRROR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" filter_min="FILTER_TRILINEAR" />
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" filter_mip="FILTER_NEAREST" />
+          <texture name="position" sampler="2" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <texture name="water_bump" file="water_bump.png" sampler="3" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP" />
+          <texture name="water_foam" file="foam.dds" sampler="4" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" />
+          <vertex_shader file="water.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" dynamic="1"></constant>
+          </vertex_shader>
+          <pixel_shader file="water.psh" defines="USE_FOAM;USE_UNDERWATER;USE_WAVES">
+            <constant name="matViewInverse" semantic="CameraInverse" dynamic="true"></constant>
+            <constant name="matViewProj" semantic="CameraViewProjection" dynamic="true"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="true"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="stone" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="rocks" file="wall.jpg" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rocks_bump" file="wall_bump.tga" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="texCoordMult" type="float2" dynamic="false">4.0 4.0</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="steel" emissive_factor="700.0" two_sided="1">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="steel" file="rust_steel.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="texCoordMult" type="float2" dynamic="false">4.0 4.0</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="stone2">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="concrete" file="concrete.bmp" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="rock_bump" file="rock_bump.dds" sampler="1"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="texCoordMult" type="float2" dynamic="false">1.0f 1.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="stones" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="stones" file="stones.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="texCoordMult" type="float2" dynamic="false">1.0f 1.0f</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="parallaxMap">
+      <technique name="main">
+        <pass name="parallaxmap">
+          <texture name="rock" file="rock.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_bump" file="rock_bump.dds" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_height" file="rock_height.jpg" sampler="2" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="paralax_map.vsh" profile="vs_3_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="paralax_map.psh" function="PS_TexturedNormalMap" profile="ps_3_0">
+            <constant name="scale" type="float" dynamic="false">0.08f</constant>
+            <constant name="bias" type="float" dynamic="false">0.03f</constant>
+            <constant name="matViewInv" semantic="ViewInverse" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="parallaxOcclusionMap">
+      <technique name="main">
+        <pass name="parallaxocclmap">
+          <texture name="wood" file="wood.jpg" sampler="0" addressing_mode="ADDRESS_WRAP" />
+          <texture name="figures_height" file="figures_bump.tga" sampler="1" addressing_mode="ADDRESS_WRAP" />
+          <vertex_shader file="paralax_occl_map.vsh" profile="vs_3_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="paralax_occl_map.psh" function="PS_TexturedNormalMap">
+            <constant name="scale" type="float" dynamic="false">0.1f</constant>
+            <constant name="maxSamples" type="float" dynamic="false">100</constant>
+            <constant name="minSamples" type="float" dynamic="false">30</constant>
+            <constant name="matViewInv" semantic="ViewInverse" dynamic="false"></constant>
+            <constant name="matView" semantic="View" dynamic="false"></constant>
+            <constant name="lightDir" type="float3" dynamic="false">0.0 -1.0 0.0</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="normalMap2" two_sided="true">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="crate" file="crate.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="specular_intensity" type="float" dynamic="false">8.0f</constant>
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="dotCel">
+      <technique name="main">
+        <pass name="main">
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="0"/>
+          <vertex_shader file="dot_cel.vsh" profile="vs_2_a">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="dot_cel.psh" profile="ps_2_a"></pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="dotCelBlue">
+      <technique name="main">
+        <pass name="main">
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="0"/>
+          <vertex_shader file="dot_cel.vsh" profile="vs_2_a">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="dot_cel.psh" profile="ps_2_a">
+            <constant name="base_color" type="float4" dynamic="0">0.5 0.1 1.0 1.0</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="terrain" two_sided="false" cast_shadow="false" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="terrain">
+          <texture name="mud" file="mud.jpg" sampler="0" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="grass" file="grass.dds" sampler="1" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="stones" file="mountain_rocks.dds" sampler="2" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="snow" file="snow.jpg" sampler="3" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="mud_bump" file="mud_bump.dds" sampler="4" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" />
+          <texture name="grass_bump" file="terrain_bump.tga" sampler="5" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" />
+          <texture name="stones_bump" file="mountain_rocks_bump.dds" sampler="6" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" />
+          <texture name="stones_bump" file="mountain_rocks_bump.dds" sampler="7" addressing_mode="ADDRESS_MIRROR" filter_min="FILTER_TRILINEAR" />
+          <vertex_shader file="terrain.vsh" profile="vs_2_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="terrain.psh" profile="ps_2_a" function="main">
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="terrain_morphable" two_sided="false" cast_shadow="false" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="terrain">
+          <texture name="mud" file="mud.jpg" sampler="0" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="grass" file="grass.dds" sampler="1" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="stones" file="mountain_rocks.dds" sampler="2" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="snow" file="snow.jpg" sampler="3" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="mud_bump" file="mud_bump.dds" sampler="4" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="grass_bump" file="terrain_bump.tga" sampler="5" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="stones_bump" file="mountain_rocks_bump.dds" sampler="6" addressing_mode="ADDRESS_MIRROR"/>
+          <texture name="stones_bump" file="mountain_rocks_bump.dds" sampler="7" addressing_mode="ADDRESS_MIRROR"/>
+          <vertex_shader file="terrain_morphable.vsh" profile="vs_2_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="terrain.psh" profile="ps_2_a" function="main">
+            <constant name="specular_intensity" type="float" dynamic="false">0.0f</constant>
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="crate">
+      <technique name="main">
+        <pass name="normalmap">
+          <texture name="crate" file="crate.dds" sampler="0"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="specular_intensity" type="float" dynamic="false">0.1f</constant>
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="materialID" type="float" dynamic="false">1.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="wire">
+      <technique name="main">
+        <pass name="wire">
+          <vertex_shader file="wire.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"/>
+          </vertex_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="clouds_density" order="post" z_write="0" cast_shadow="false">
+      <technique name="main">
+        <pass name="main">
+          <texture name="density_map" usage="render_target" format="a8r8g8b8" sampler="0" width_ratio="512" height_ratio="512" addressing_mode="ADDRESS_WRAP"></texture>
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="cloud_density.psh" function="main" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="clouds_HDR" cast_shadow="false" z_write="0" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="cloud_cover_map" usage="render_target" format="a8r8g8b8" sampler="0" width_ratio="512" height_ratio="512" />
+          <texture name="density_map" sampler="0" addressing_mode="ADDRESS_MIRROR" bind_as_texture="true" filter_min="FILTER_TRILINEAR" />
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="cloud_HDR.psh" function="main" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="clouds_NON_HDR" transparent="true" src_blend="5" dest_blend="6" cast_shadow="false" z_write="1">
+      <technique name="main">
+        <pass name="main">
+          <texture name="density_map" sampler="0" addressing_mode="ADDRESS_MIRROR" bind_as_texture="true"></texture>
+          <vertex_shader file="cloud.vsh" profile="vs_3_0" function="main">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="cloud.psh" function="main" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="preetham_sky" emissive_factor="7000.0" cast_shadow="0">
+      <technique name="main">
+        <pass name="sky">
+          <texture name="cloud_cover_map" sampler="0" addressing_mode="ADDRESS_WRAP" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR"></texture>
+          <vertex_shader file="sky.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="sky.psh">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="ssao" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="render" order="post">
+          <texture name="ambient_occl" usage="render_target" format="a8r8g8b8" sampler="0"></texture>
+          <texture name="position" sampler="0" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <texture name="random_normals" file="RANDOMNORMAL.png" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="ssao.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="false"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="ssao.psh">
+            <constant name="radius" type="float" dynamic="false">1.025f</constant>
+            <constant name="range" type="float" dynamic="false">1.0f</constant>
+            <constant name="depthThresh" type="float" dynamic="false">400.0f</constant>
+            <constant name="aspect" semantic="Aspect" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+        <pass name="hblur" order="post">
+          <texture name="ssao_hblur" usage="render_target" format="a8r8g8b8" sampler="0"></texture>
+          <texture name="ambient_occl" sampler="1"></texture>
+          <texture name="position" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <texture name="normal" sampler="3" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <vertex_shader file="hblur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="hblur.psh" function="PS_GaussianBlur">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+        <pass name="vblur" order="post">
+          <texture name="ssao_vblur" usage="render_target" format="a8r8g8b8" sampler="0"></texture>
+          <texture name="ssao_hblur" sampler="1"></texture>
+          <texture name="position" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <texture name="normal" sampler="3" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <vertex_shader file="hblur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="vblur.psh" function="PS_GaussianBlur">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="ssao_vblur" sampler="0"></texture>
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="false"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="ssao_comp.psh" profile="ps_2_0">
+            <constant name="ssaoStrength" type="float" dynamic="false">0.2f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="light_sun_preetham" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="2" ambient="25;25;25;255">
+      <technique name="main">
+        <pass name="sun" order="post">
+          <texture name="diffuse" sampler="0" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <texture name="position" sampler="1" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <texture name="normal" sampler="2" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <vertex_shader file="preetham_haze.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="preetham_hazeTex.psh" profile="ps_3_0">
+            <constant name="ambient" semantic="Ambient" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="antialias" transparent="false" z_write="false" order="post" src_blend="2" dest_blend="1">
+      <technique name="main">
+        <pass name="antialias" order="post">
+          <texture name="BackBuffer" sampler="0" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <texture name="normal" sampler="1" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="antialias.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="weight" type="float" dynamic="0">1.5f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="fire" transparent="true" z_write="false" order="post" src_blend="5" dest_blend="6" cast_shadow="false">
+      <technique name="main">
+        <pass name="particle" order="scene">
+          <texture name="fire_rt" usage="render_target" sampler="0" width_ratio="1.0" height_ratio="1.0"></texture>
+          <texture name="fire" file="fire.png" sampler="0"></texture>
+          <texture name="position" sampler="1"></texture>
+          <texture name="particle_mask" file="particle_mask.png" sampler="2"></texture>
+          <vertex_shader file="particle.vsh" profile="vs_3_0">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matView" semantic="View" dynamic="false"></constant>
+            <constant name="matViewInv" semantic="ViewInverse" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="particle.psh" profile="ps_3_0">
+            <constant name="density" type="float" dynamic="false">3.0f</constant>
+            <constant name="near" semantic="NearPlane" dynamic="false" />
+          </pixel_shader>
+        </pass>
+        <pass name="heat" order="post">
+          <texture name="heat_rt" usage="render_target" sampler="0" width_ratio="1.0" height_ratio="1.0"></texture>
+          <texture name="fire_rt" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" bind_as_texture="true"></texture>
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <vertex_shader file="post_particle.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="heat.psh" profile="ps_2_0">
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="scale" type="float" dynamic="false">1.0</constant>
+          </pixel_shader>
+        </pass>
+        <pass name="render" order="post">
+          <texture name="heat_rt" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"></texture>
+          <vertex_shader file="post_particle.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="post.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="scale" type="float" dynamic="false">1.0</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="smoke" transparent="true" z_write="false" order="post" src_blend="5" dest_blend="6" cast_shadow="0">
+      <technique name="main">
+        <pass name="particle" order="scene">
+          <texture name="smoke_rt" usage="render_target" sampler="0" width_ratio="1.0" height_ratio="1.0" clear_depth="1" clear_target="1"></texture>
+          <texture name="smoke" file="smoke.dds" sampler="0"></texture>
+          <texture name="position" sampler="1"></texture>
+          <texture name="particle_mask" file="particle_mask.png" sampler="2"></texture>
+          <vertex_shader file="particle.vsh">
+            <constant name="matViewProj" semantic="ViewProj" dynamic="false"></constant>
+            <constant name="matView" semantic="View" dynamic="false"></constant>
+            <constant name="matViewInv" semantic="ViewInverse" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="particle.psh">
+            <constant name="density" type="float" dynamic="false">3.5</constant>
+            <constant name="near" semantic="NearPlane" dynamic="false" />
+          </pixel_shader>
+        </pass>
+        <pass name="render" order="post">
+          <texture name="smoke_rt" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"></texture>
+          <vertex_shader file="post_particle.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="post.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="scale" type="float" dynamic="false">1.0</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="fog" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="1">
+      <technique name="main">
+        <pass name="render" order="post">
+          <texture name="position" sampler="0" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <vertex_shader file="light_directional.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matView" semantic="Camera" dynamic="false"></constant>
+            <constant name="invTanHalfFov" semantic="InvTanHalfFov" dynamic="0"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </vertex_shader>
+          <pixel_shader file="fog.psh" profile="ps_2_0">
+            <constant name="fogDensity" type="float" dynamic="false">0.02</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="meadow_grass_1" alpha_test="true" cast_shadow="false" alpha_test_ref="40" emissive_factor="100">
+      <technique name="main">
+        <pass name="billboard">
+          <texture name="grass_meadow_1" file="grass_blades_1.dds" sampler="0"/>
+          <texture name="dissolve_tex" file="dissolve.jpg" sampler="1"/>
+          <vertex_shader file="billboard_grass.vsh" profile="vs_2_0">
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matView" semantic="View"></constant>
+            <constant name="matProj" semantic="Proj" dynamic="false"></constant>
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="billboard_grass.psh" profile="ps_2_0">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="meadow_grass_2" alpha_test="true" cast_shadow="false" alpha_test_ref="40" emissive_factor="100">
+      <technique name="main">
+        <pass name="billboard">
+          <texture name="grass_meadow_2" file="grass_blades_2.dds" sampler="0"/>
+          <texture name="dissolve_tex" file="dissolve.jpg" sampler="1"/>
+          <vertex_shader file="billboard_grass.vsh" profile="vs_2_0">
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matProj" semantic="Proj" dynamic="false"></constant>
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="billboard_grass.psh" profile="ps_2_0">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="meadow_grass_3" alpha_test="true" cast_shadow="false" alpha_test_ref="40" emissive_factor="100">
+      <technique name="main">
+        <pass name="billboard">
+          <texture name="grass_meadow_3" file="grass_blades_3.dds" sampler="0"/>
+          <texture name="dissolve_tex" file="dissolve.jpg" sampler="1"/>
+          <vertex_shader file="billboard_grass.vsh" profile="vs_2_0">
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matProj" semantic="Proj" dynamic="false"></constant>
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="billboard_grass.psh" profile="ps_2_0">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="meadow_grass_4" alpha_test="true" cast_shadow="false" alpha_test_ref="40" emissive_factor="100">
+      <technique name="main">
+        <pass name="billboard">
+          <texture name="grass_meadow_4" file="grass_blades_4.dds" sampler="0"/>
+          <texture name="dissolve_tex" file="dissolve.jpg" sampler="1"/>
+          <vertex_shader file="billboard_grass.vsh" profile="vs_2_0">
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matView" semantic="View"></constant>
+            <constant name="matProj" semantic="Proj" dynamic="false"></constant>
+            <constant name="timer" semantic="Time" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="billboard_grass.psh" profile="ps_2_0">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="meadow_flower" alpha_test="true" cast_shadow="false" alpha_test_ref="30" emissive_factor="100">
+      <technique name="main">
+        <pass name="billboard">
+          <texture name="flower_meadow" file="flower.dds" sampler="0"/>
+          <texture name="dissolve_tex" file="dissolve.jpg" sampler="1"/>
+          <vertex_shader file="billboard_grass.vsh" profile="vs_2_0">
+            <constant name="matWorldView" semantic="WorldView"></constant>
+            <constant name="matWorld" semantic="World" dynamic="false"></constant>
+            <constant name="matProj" semantic="Proj" dynamic="false"></constant>
+          </vertex_shader>
+          <pixel_shader file="billboard_grass.psh" profile="ps_2_0">
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="gui_default_active" transparent="true" src_blend="5" dest_blend="6" z_write="0">
+      <technique name="main">
+        <pass name="gui">
+          <texture name="gui_skin" file="gui_default_skin.png" sampler="0" addressing_mode="ADDRESS_CLAMP" />
+          <vertex_shader file="gui.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="gui.psh" profile="ps_2_0">
+            <constant name="opaque" type="float" dynamic="false">0.95f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="gui_default_inactive" transparent="true" src_blend="5" dest_blend="6" z_write="0">
+      <technique name="main">
+        <pass name="gui">
+          <texture name="gui_skin" file="gui_default_skin.png" sampler="0" addressing_mode="ADDRESS_CLAMP" />
+          <vertex_shader file="gui.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="gui.psh" profile="ps_2_0">
+            <constant name="opaque" type="float" dynamic="false">0.3f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="bloom" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="1">
+      <technique name="main">
+        <pass name="downsample" order="post">
+          <texture name="bloom_down" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST"></texture>
+          <vertex_shader file="downsample.vsh" profile="vs_3_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="downsample.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+        <pass name="hblur" order="post">
+          <texture name="bloom_hblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="bloom_down" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">1.0 0.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">2.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="vblur" order="post">
+          <texture name="bloom_vblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="bloom_hblur" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">0.0 1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">2.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="bloom_vblur" sampler="0"></texture>
+          <texture name="BackBuffer" sampler="1"></texture>
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="bloom.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="depthOfField" transparent="true" z_write="false" order="post" src_blend="2" dest_blend="1">
+      <technique name="main">
+        <pass name="downsample" order="post">
+          <texture name="dof_down" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="BackBuffer" sampler="1"></texture>
+          <vertex_shader file="downsample.vsh" profile="vs_3_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="downsample.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+        <pass name="hblur" order="post">
+          <texture name="dof_hblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="dof_down" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">1.0 0.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">2.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="vblur" order="post">
+          <texture name="dof_vblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="dof_hblur" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">0.0 1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">2.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="dof_vblur" sampler="0"></texture>
+          <texture name="BackBuffer" sampler="1"></texture>
+          <texture name="position" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="dof.psh" profile="ps_3_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="blackAndWhite" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="BW" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="blackAndWhite.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="bleach" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="bleach" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="bleach.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="vintageLook" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="vintageLook" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="vintageLook.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="vintageLook_noBlue" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="vintageLook" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="vintageLook_withoutBlue.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="selectiveColouring" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="selectiveColouring" order="post">
+          <texture name="BackBuffer" sampler="0" />
+          <texture name="materialBuffer" sampler="1" />
+          <texture name="MaterialBufferTex" file="ds_material_buffer.png" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NEAREST" />
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="selectiveColour.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="glow" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="downsample" order="post">
+          <texture name="glow_down" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.5" width_ratio="0.5" />
+          <texture name="BackBuffer" sampler="1" addressing_mode="ADDRESS_CLAMP" filter_mag="FILTER_NEAREST" filter_min="FILTER_NEAREST" />
+          <texture name="materialBuffer" sampler="2" />
+          <texture name="MaterialBufferTex" file="ds_material_buffer.png" sampler="3" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" filter_mip="FILTER_NEAREST" />
+          <vertex_shader file="downsample.vsh" profile="vs_3_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="downsample_glow.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+        <pass name="hblur" order="post">
+          <texture name="glow_hblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="glow_down" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">1.0 0.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">4.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="vblur" order="post">
+          <texture name="glow_vblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.25" width_ratio="0.25"></texture>
+          <texture name="glow_hblur" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">0.0 1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">4.0</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur.psh" function="PS_GaussianBlur">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="glow_vblur" sampler="0"></texture>
+          <texture name="BackBuffer" sampler="1"></texture>
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="glow.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="monochrome" transparent="false" z_write="false" order="post">
+      <technique name="main">
+        <pass name="main" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="monochrome.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="inverse" transparent="false" order="post">
+      <technique name="main">
+        <pass name="invert" order="post">
+          <texture name="BackBuffer" sampler="0"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="invert.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="sepia" transparent="false" order="post">
+      <technique name="main">
+        <pass name="sepia" order="post">
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="sepia.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="edgeDetection" transparent="false" order="post">
+      <technique name="main">
+        <pass name="edgeDetection" order="post">
+          <texture name="normal" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="edgeDetection.psh" profile="ps_2_0">
+            <constant name="pixelSize" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="sobelFilter" transparent="false" order="post">
+      <technique name="main">
+        <pass name="edgeDetection" order="post">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="normal" sampler="1"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="edgeDetectionColour.psh" profile="ps_2_0">
+            <constant name="pixelSize" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="thermalVision" transparent="false" order="post">
+      <technique name="main">
+        <pass name="thermalVision" order="post">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="thermal" file="thermal.bmp" sampler="1"/>
+          <texture name="position" sampler="2" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <texture name="normal" sampler="3" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST"></texture>
+          <texture name="thermalNoise" file="noise.bmp" sampler="4" addressing_mode="ADDRESS_WRAP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="thermalVision.psh" profile="ps_2_0">
+            <constant name="timer" semantic="Time"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="nightVisionDevice" transparent="false" order="post">
+      <technique name="main">
+        <pass name="nightVisionDeviceMain" order="post">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="thermalNoise" file="noise.bmp" sampler="1" addressing_mode="ADDRESS_WRAP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="nightVision.psh" profile="ps_2_0">
+            <constant name="timer" semantic="Time"></constant>
+            <constant name="aspect" semantic="Aspect" dynamic="0"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="makeTiles" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="tilize.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="waterColor" transparent="false" order="post">
+      <technique name="main">
+        <pass name="median_edge_1">
+          <texture name="median1" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="1.0" width_ratio="1.0"/>
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="median_edge_2">
+          <texture name="median1" sampler="0"/>
+          <texture name="median2" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="1.0" width_ratio="1.0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="edge">
+          <texture name="median2" sampler="0"/>
+          <texture name="median1" sampler="0" usage="render_target" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="edgeDetection2.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="thicken">
+          <texture name="median1" sampler="0"/>
+          <texture name="median2" sampler="0" usage="render_target" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="thicken.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_edge_3">
+          <texture name="median2" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_1">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_2">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_3">
+          <texture name="median3" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_4">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_5">
+          <texture name="median3" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_6">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_7">
+          <texture name="median3" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_8">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_9">
+          <texture name="median3" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_10">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_11">
+          <texture name="median3" sampler="0"/>
+          <texture name="median1" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_scene_12">
+          <texture name="median1" sampler="0"/>
+          <texture name="median3" usage="render_target" sampler="0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="composition">
+          <texture name="median2" sampler="0"/>
+          <texture name="median3" sampler="1"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="waterColor_composition.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="pencilStroke" transparent="false" order="post">
+      <technique name="main">
+        <pass name="median_edge_1">
+          <texture name="median1" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="1.0" width_ratio="1.0" bind_as_texture="0"/>
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+        <pass name="median_edge_2">
+          <texture name="median1" sampler="0"/>
+          <texture name="median2" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="1.0" width_ratio="1.0" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="edge">
+          <texture name="median2" sampler="0"/>
+          <texture name="median1" sampler="0" usage="render_target" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="edgeDetection2.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="thicken">
+          <texture name="median1" sampler="0"/>
+          <texture name="median2" sampler="0" usage="render_target" bind_as_texture="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="thicken.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+        <pass name="median_edge_3">
+          <texture name="median2" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="median.psh" profile="ps_2_0">
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="palm_leaf" cast_shadow="1" two_sided="1" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="main">
+          <texture name="grass" file="grass.dds" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="vegetation_leaves.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+            <constant name="matView" semantic="View"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="specular_intensity" type="float" dynamic="false">0.04</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+      <technique name="shadow">
+        <pass name="shadow_main">
+          <texture name="shadowDepth" usage="render_target" format="r32f" sampler="0" width_ratio="512" height_ratio="512" clear_depth="false" clear_target="false" bind_as_texture="0"/>
+          <vertex_shader file="vegetation_leaves_shadow.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="shadow_map.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="palm_bark" cast_shadow="1" emissive_factor="600.0">
+      <technique name="main">
+        <pass name="main">
+          <texture name="palm_bark" file="palm_bark.dds" sampler="0" filter_min="FILTER_TRILINEAR" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR"/>
+          <texture name="crate_bump" file="crate_bump.jpg" sampler="1"/>
+          <vertex_shader file="vegetation_leaves.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0"></constant>
+            <constant name="matView" semantic="View"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="specular_intensity" type="float" dynamic="false">0.32</constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+          </pixel_shader>
+        </pass>
+      </technique>
+      <technique name="shadow">
+        <pass name="shadow_main">
+          <texture name="shadowDepth" usage="render_target" format="r32f" sampler="0" width_ratio="512" height_ratio="512" clear_depth="false" clear_target="false" bind_as_texture="0"/>
+          <vertex_shader file="vegetation_leaves_shadow.vsh" profile="vs_2_0">
+            <constant name="matViewProj" semantic="ViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="timer" semantic="Time"></constant>
+          </vertex_shader>
+          <pixel_shader file="shadow_map.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="skinned" cast_shadow="1">
+      <technique name="main">
+        <pass name="main">
+          <texture name="tiny" file="Tiny_skin.dds" sampler="0" filter_min="FILTER_ANISOTROPIC" filter_mag="FILTER_TRILINEAR" filter_mip="FILTER_TRILINEAR" addressing_mode="ADDRESS_WRAP"/>
+          <texture name="rock_bump" file="rock_bump.dds" sampler="1" addressing_mode="ADDRESS_WRAP"/>
+          <vertex_shader file="skinned.vsh" profile="vs_2_a">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" />
+            <constant name="matWorldView" semantic="WorldView" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="boneMatrices" type="float" elements="480" />
+          </vertex_shader>
+          <pixel_shader file="normal_map.psh" profile="ps_2_a" function="PS_TexturedNormalMap">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+      <technique name="shadow">
+        <pass name="shadow_main">
+          <texture name="shadowDepth" usage="render_target" format="r32f" sampler="0" width_ratio="512" height_ratio="512" clear_depth="false" clear_target="false" bind_as_texture="0"/>
+          <vertex_shader file="skinned_shadow.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" />
+            <constant name="boneMatrices" type="float" elements="480" />
+          </vertex_shader>
+          <pixel_shader file="shadow_map.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="lightning" z_write="false" cast_shadow="0" emissive_factor="2000.0" two_sided="1" transparent="1" src_blend="5" dest_blend="2" order="post">
+      <technique name="main">
+        <pass name="lightning" order="scene">
+          <texture name="lightning" usage="render_target" sampler="0" width_ratio="1.0" height_ratio="1.0" bind_as_texture="0"/>
+          <vertex_shader file="lightning.vsh" profile="vs_2_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="lightning.psh" profile="ps_2_a">
+          </pixel_shader>
+        </pass>
+        <pass name="hblur" order="post">
+          <texture name="lightning_hblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="lightning" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">1.0 0.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">0.5</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur_and_bloom.psh">
+          </pixel_shader>
+        </pass>
+        <pass name="vblur" order="post">
+          <texture name="lightning_vblur" usage="render_target" format="a8r8g8b8" sampler="0" height_ratio="0.5" width_ratio="0.5"></texture>
+          <texture name="lightning_hblur" sampler="1"></texture>
+          <vertex_shader file="gaussian_blur.vsh" function="VS_GaussianBlur">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="direction" type="float2">0.0 1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">0.5</constant>
+            <constant name="pixel_size" semantic="PixelSize" dynamic="0"/>
+          </vertex_shader>
+          <pixel_shader file="gaussian_blur_and_bloom.psh">
+          </pixel_shader>
+        </pass>
+        <pass name="composition" order="post">
+          <texture name="lightning_vblur" sampler="0" bind_as_texture="1" />
+          <texture name="lightning" sampler="1" bind_as_texture="1" />
+          <vertex_shader file="diffuse_vs3.vsh" profile="vs_3_0">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="lightning_comp.psh" profile="ps_3_0">
+            <constant name="flashFactor" type="float" dynamic="0">1.0</constant>
+            <constant name="blurStrength" type="float" dynamic="0">0.4</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="oldMovie" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="thermalNoise" file="noise.bmp" sampler="1" addressing_mode="ADDRESS_WRAP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="oldMovie.psh" profile="ps_2_0">
+            <constant name="timer" semantic="Time"></constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="distanceHeatHaze" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <sampler name="BackBuffer" sampler="0" />
+          <sampler name="position" sampler="1" filter_min="FILTER_NEAREST" filter_mag="FILTER_NEAREST" />
+          <sampler name="convection" file="pattern.png" sampler="2" addressing_mode="ADDRESS_MIRROR" />
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" />
+          </vertex_shader>
+          <pixel_shader file="distanceHeatHaze.psh" profile="ps_2_a">
+            <constant name="matViewInverse" semantic="CameraInverse" dynamic="true" />
+            <constant name="cameraPos" semantic="EyePosition" dynamic="0" />
+            <constant name="timer" semantic="Time" />
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="oneColour" cast_shadow="1" two_sided="0">
+      <technique name="main">
+        <pass name="normalmap">
+          <vertex_shader file="normal_map.vsh" profile="vs_2_0" function="VS_TransformAndTexture">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+            <constant name="matWorld" semantic="World"></constant>
+            <constant name="cameraPos" semantic="EyePosition" dynamic="false"></constant>
+            <constant name="matWorldView" semantic="WorldView"></constant>
+          </vertex_shader>
+          <pixel_shader file="diffuse_colour.psh" profile="ps_2_a">
+            <constant name="matViewIT" semantic="ViewInverseTranspose" dynamic="false"></constant>
+            <constant name="emissive" semantic="Emissive" dynamic="false"/>
+            <constant name="colour" type="float4" dynamic="1">1.0f 1.0f 1.0f 1.0f</constant>
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="radialBlur" transparent="false" order="post">
+      <technique name="main">
+        <pass name="radial_blur">
+          <sampler name="BackBuffer" sampler="0" />
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj" />
+          </vertex_shader>
+          <pixel_shader file="radial_blur.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="grading_high_contrast" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="hi_contrast" file="grading_hi_contrast.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="grading_low_contrast" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="lo_contrast" file="grading_lo_contrast.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="grading_invert" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="invert" file="grading_invert.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="grading_orange_and_teal" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="orangeAndTeal" file="grading_orange_and_teal.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="warmify" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="warm" file="grading_warm.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="coolify" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <texture name="cool" file="grading_cool.png" sampler="1" addressing_mode="ADDRESS_CLAMP"></texture>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="colour_grade.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="saturation" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse_vs3.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="saturate.psh" profile="ps_3_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+    <material name="orwig" transparent="false" order="post">
+      <technique name="main">
+        <pass name="main">
+          <texture name="BackBuffer" sampler="0"/>
+          <vertex_shader file="diffuse.vsh">
+            <constant name="matWorldViewProj" semantic="WorldViewProj"></constant>
+          </vertex_shader>
+          <pixel_shader file="orwig.psh" profile="ps_2_0">
+          </pixel_shader>
+        </pass>
+      </technique>
+    </material>
+  </materials>
+</library>

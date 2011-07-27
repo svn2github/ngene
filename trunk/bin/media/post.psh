@@ -1,0 +1,21 @@
+// Post-process pixel shader
+// Copyright (C) Wojciech Toman 2007
+
+sampler diffuseTex: register(s0);
+
+float2 pixel_size = {1.0f / 800.0f, 1.0f / 600.0f};
+float scale = 1.0f;
+
+struct VertexOutput
+{
+	float4 position: POSITION0;
+	float2 texCoord: TEXCOORD0;
+};
+
+float4 main(VertexOutput IN): COLOR0
+{
+    float4 diffuseMap = tex2D(diffuseTex, IN.texCoord + 0.5f * pixel_size * scale);
+	float4 colour = diffuseMap;
+
+    return colour;
+}
