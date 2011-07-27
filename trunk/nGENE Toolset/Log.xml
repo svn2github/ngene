@@ -1,0 +1,166 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="Logger.xsl"?>
+<RunTimeLog>
+<LogHeader>
+<Session>
+<Started>
+<Time>15:01:09</Time><Date>21.09.2009</Date></Started>
+<Configuration>
+<ProcessorType>Intel(R) Core(TM)2 Duo CPU     E6550  @ 2.33GHz</ProcessorType>
+</Configuration>
+</Session>
+</LogHeader>
+<LogEvent id="1">
+<Type>4</Type>
+<TimeIndex>371 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitUtilities()</Function>
+<LineNumber>88</LineNumber>
+<Message>Initializing utilities</Message>
+</LogEvent>
+<LogEvent id="2">
+<Type>2</Type>
+<TimeIndex>379 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitCPU()</Function>
+<LineNumber>108</LineNumber>
+<Message>CPU Vendor is: GenuineIntel</Message>
+</LogEvent>
+<LogEvent id="3">
+<Type>2</Type>
+<TimeIndex>380 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitCPU()</Function>
+<LineNumber>114</LineNumber>
+<Message>SIMD supported</Message>
+</LogEvent>
+<LogEvent id="4">
+<Type>4</Type>
+<TimeIndex>392 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitRenderer()</Function>
+<LineNumber>150</LineNumber>
+<Message>Initializing renderer</Message>
+</LogEvent>
+<LogEvent id="5">
+<Type>4</Type>
+<TimeIndex>553 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitRenderer()</Function>
+<LineNumber>164</LineNumber>
+<Message>Initializing scene manager</Message>
+</LogEvent>
+<LogEvent id="6">
+<Type>4</Type>
+<TimeIndex>554 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitPhysics()</Function>
+<LineNumber>172</LineNumber>
+<Message>Initializing physics: Ageia PhysX engine</Message>
+</LogEvent>
+<LogEvent id="7">
+<Type>4</Type>
+<TimeIndex>1736 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitSound()</Function>
+<LineNumber>335</LineNumber>
+<Message>Initializing sound system: FMOD library</Message>
+</LogEvent>
+<LogEvent id="8">
+<Type>4</Type>
+<TimeIndex>1737 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitUI()</Function>
+<LineNumber>127</LineNumber>
+<Message>Initializing input</Message>
+</LogEvent>
+<LogEvent id="9">
+<Type>4</Type>
+<TimeIndex>1763 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\engine.cpp</File>
+<Function>nGENE::Engine::InitUI()</Function>
+<LineNumber>141</LineNumber>
+<Message>Initializing user interface</Message>
+</LogEvent>
+<LogEvent id="10">
+<Type>4</Type>
+<TimeIndex>2371 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\texturemanager.cpp</File>
+<Function>nGENE::TextureManager::createTexture()</Function>
+<LineNumber>47</LineNumber>
+<Message>Creating texture: BackBuffer</Message>
+</LogEvent>
+<LogEvent id="11">
+<Type>4</Type>
+<TimeIndex>2372 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\texturedx9.cpp</File>
+<Function>nGENE::TextureDX9::create()</Function>
+<LineNumber>85</LineNumber>
+<Message>Creating empty texture</Message>
+</LogEvent>
+<LogEvent id="12">
+<Type>4</Type>
+<TimeIndex>2392 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\texturemanager.cpp</File>
+<Function>nGENE::TextureManager::createTexture()</Function>
+<LineNumber>47</LineNumber>
+<Message>Creating texture: HDRBackBuffer</Message>
+</LogEvent>
+<LogEvent id="13">
+<Type>4</Type>
+<TimeIndex>2393 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\texturedx9.cpp</File>
+<Function>nGENE::TextureDX9::create()</Function>
+<LineNumber>85</LineNumber>
+<Message>Creating empty texture</Message>
+</LogEvent>
+<LogEvent id="14">
+<Type>6</Type>
+<TimeIndex>2405 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\filemanager.cpp</File>
+<Function>nGENE::FileManager::changeDir()</Function>
+<LineNumber>153</LineNumber>
+<Message>Changing directory failed. Make sure: ../media exists and you can access it</Message>
+</LogEvent>
+<LogEvent id="15">
+<Type>4</Type>
+<TimeIndex>2607 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\materialmanager.cpp</File>
+<Function>nGENE::MaterialManager::createLibraryFromFile()</Function>
+<LineNumber>68</LineNumber>
+<Message>Loading material library file: core.lib</Message>
+</LogEvent>
+<LogEvent id="16">
+<Type>6</Type>
+<TimeIndex>2642 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\file.cpp</File>
+<Function>nGENE::File::open()</Function>
+<LineNumber>75</LineNumber>
+<Message>File: core.lib could not be opened</Message>
+</LogEvent>
+<LogEvent id="17">
+<Type>7</Type>
+<TimeIndex>2673 ms</TimeIndex>
+<NameSpace>nGENE</NameSpace>
+<File>h:\inne\ngene\ngene proj\xmlparser.cpp</File>
+<Function>nGENE::XMLParser::nGENEDomErrorHandler::fatalError()</Function>
+<LineNumber>111</LineNumber>
+<Message>Invalid document structure on line 1</Message>
+</LogEvent>
+</RunTimeLog>

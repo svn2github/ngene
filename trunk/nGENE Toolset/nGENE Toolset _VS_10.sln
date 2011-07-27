@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nGENE Toolset_VS_10", "nGENE Toolset _VS_10.vcxproj", "{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF} = {52A01792-B40F-4F67-9FC0-724ECCAEBBCF}
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D} = {6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nGENE Framework_VS_10", "..\nGENE Framework\nGENE Framework_VS_10.vcxproj", "{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF} = {52A01792-B40F-4F67-9FC0-724ECCAEBBCF}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nGENE Proj", "..\nGENE Proj\nGENE Proj_VS_10.vcxproj", "{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Final|Win32 = Final|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Debug|Win32.Build.0 = Debug|Win32
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Final|Win32.ActiveCfg = Final|Win32
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Final|Win32.Build.0 = Final|Win32
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Release|Win32.ActiveCfg = Release|Win32
+		{F4704AEE-3F33-4AB0-A72C-4875B4F8746A}.Release|Win32.Build.0 = Release|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Debug|Win32.Build.0 = Debug|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Final|Win32.ActiveCfg = Final|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Final|Win32.Build.0 = Final|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Release|Win32.ActiveCfg = Release|Win32
+		{6B3C3EF7-07DA-4BD5-AA50-360ECB395E0D}.Release|Win32.Build.0 = Release|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Debug|Win32.Build.0 = Debug|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Final|Win32.ActiveCfg = Final|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Final|Win32.Build.0 = Final|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Release|Win32.ActiveCfg = Release|Win32
+		{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

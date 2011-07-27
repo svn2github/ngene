@@ -1,0 +1,36 @@
+<root>
+	<data_type name="float" values_count = "1"/>
+	<data_type name="float2" values_count = "2"/>
+	<data_type name="float3" values_count = "3"/>
+	<data_type name="float4" values_count = "4"/>
+	<data_type name="matrix4" values_count = "16"/>
+	
+	<semantic name="WorldViewProj" data_type="matrix4"/>
+	<semantic name="ViewProj" data_type="matrix4"/>
+	<semantic name="ViewInverse" data_type="matrix4"/>
+	<semantic name="World" data_type="matrix4"/>
+	<semantic name="View" data_type="matrix4"/>
+	<semantic name="WorldView" data_type="matrix4"/>
+	<semantic name="Proj" data_type="matrix4"/>
+	<semantic name="Camera" data_type="matrix4"/>
+	<semantic name="CameraInverse" data_type="matrix4"/>
+	<semantic name="EyePosition" data_type="float3"/>
+	<semantic name="LightDirection" data_type="float3"/>
+	<semantic name="LightPosition" data_type="float3"/>
+	<semantic name="LightIntensity" data_type="float"/>
+	<semantic name="LightColour" data_type="float4"/>
+	<semantic name="LightRadius" data_type="float3"/>
+	
+	<semantic name="NearPlane" data_type="float"/>
+	<semantic name="FarPlane" data_type="float"/>
+	
+	<semantic name="InvTanHalfFov" data_type="float"/>
+	<semantic name="Aspect" data_type="float"/>
+	<semantic name="PixelSize" data_type="float2"/>
+	
+	<semantic name="Ambient" data_type="float4"/>
+	<semantic name="Diffuse" data_type="float4"/>
+	<semantic name="Emissive" data_type="float4"/>
+	
+	<semantic name="Time" data_type="float"/>
+</root>
