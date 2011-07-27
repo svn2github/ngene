@@ -1,0 +1,56 @@
+﻿Build started 2011-04-14 14:04:31.
+     1>Project "D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\LuaBind.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "obj\x86\Release\LuaBind.unsuccessfulbuild".
+       ClCompile:
+         d:\Programowanie\Microsoft Visual Studio 10\VC\bin\CL.exe /c /I../../ /I"../../../lua-5.1.4/src" /I"../../../boost-1.39.0/" /Zi /nologo /W3 /WX- /Ox /Ob2 /Oi /Ot /Oy /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /GF /Gm- /EHsc /MD /GS- /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"obj\x86\Release\\" /Fd"D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\bin\x86\Release\LuaBind.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\src\class.cpp ..\..\src\class_info.cpp ..\..\src\class_registry.cpp ..\..\src\class_rep.cpp ..\..\src\create_class.cpp ..\..\src\error.cpp ..\..\src\find_best_match.cpp ..\..\src\function.cpp ..\..\src\implicit_cast.cpp ..\..\src\link_compatibility.cpp ..\..\src\object_rep.cpp ..\..\src\open.cpp ..\..\src\overload_rep.cpp ..\..\src\pcall.cpp ..\..\src\ref.cpp ..\..\src\scope.cpp ..\..\src\stack_content_by_name.cpp ..\..\src\weak_ref.cpp ..\..\src\wrapper_base.cpp
+         class.cpp
+         class_info.cpp
+         class_registry.cpp
+         class_rep.cpp
+         create_class.cpp
+         error.cpp
+         find_best_match.cpp
+         function.cpp
+         implicit_cast.cpp
+         link_compatibility.cpp
+         object_rep.cpp
+         open.cpp
+         overload_rep.cpp
+         pcall.cpp
+         ref.cpp
+         scope.cpp
+         stack_content_by_name.cpp
+         weak_ref.cpp
+         wrapper_base.cpp
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(1151,5): warning MSB8012: TargetPath(D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\bin\x86\Release\LuaBind.lib) does not match the Library's OutputFile property value (D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\bin\x86\Release\luabind.x86.release.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(1153,5): warning MSB8012: TargetName(LuaBind) does not match the Library's OutputFile property value (luabind.x86.release). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         d:\Programowanie\Microsoft Visual Studio 10\VC\bin\Lib.exe /OUT:"bin\x86\Release\luabind.x86.release.lib" /NOLOGO /LTCG obj\x86\Release\class.obj
+         obj\x86\Release\class_info.obj
+         obj\x86\Release\class_registry.obj
+         obj\x86\Release\class_rep.obj
+         obj\x86\Release\create_class.obj
+         obj\x86\Release\error.obj
+         obj\x86\Release\find_best_match.obj
+         obj\x86\Release\function.obj
+         obj\x86\Release\implicit_cast.obj
+         obj\x86\Release\link_compatibility.obj
+         obj\x86\Release\object_rep.obj
+         obj\x86\Release\open.obj
+         obj\x86\Release\overload_rep.obj
+         obj\x86\Release\pcall.obj
+         obj\x86\Release\ref.obj
+         obj\x86\Release\scope.obj
+         obj\x86\Release\stack_content_by_name.obj
+         obj\x86\Release\weak_ref.obj
+         obj\x86\Release\wrapper_base.obj
+         LuaBind.vcxproj -> D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\bin\x86\Release\LuaBind.lib
+       FinalizeBuildStatus:
+         Deleting file "obj\x86\Release\LuaBind.unsuccessfulbuild".
+         Touching "obj\x86\Release\LuaBind.lastbuildstate".
+     1>Done Building Project "D:\Programowanie\Programy\nGene\Dependencies\LuaBind\luabind\Nuclex.LuaBind.Binaries-0.8.1\library_sources\luabind-0.8.1\Build\msvc-9.0-sp1\LuaBind.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:41.71

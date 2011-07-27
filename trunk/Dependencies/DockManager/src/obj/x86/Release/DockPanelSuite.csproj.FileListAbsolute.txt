@@ -1,0 +1,9 @@
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\bin\x86\Release\WeifenLuo.WinFormsUI.Docking.dll
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\bin\x86\Release\WeifenLuo.WinFormsUI.Docking.pdb
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\ResolveAssemblyReference.cache
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\WeifenLuo.WinFormsUI.Docking.Resources.resources
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\WeifenLuo.WinFormsUI.Docking.Strings.resources
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\GenerateResource.read.1.tlog
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\GenerateResource.write.1.tlog
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\WeifenLuo.WinFormsUI.Docking.dll
+D:\Programowanie\Programy\nGene\Dependencies\DockManager\src\obj\x86\Release\WeifenLuo.WinFormsUI.Docking.pdb
