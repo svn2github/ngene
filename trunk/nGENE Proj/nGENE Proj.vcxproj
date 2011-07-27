@@ -1,0 +1,714 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Final|Win32">
+      <Configuration>Final</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{52A01792-B40F-4F67-9FC0-724ECCAEBBCF}</ProjectGuid>
+    <RootNamespace>nGENE Proj</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../bin/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../obj/$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../bin/$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">../obj/$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</GenerateManifest>
+    <EmbedManifest Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</EmbedManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">../bin/Final\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Final|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">nGENE_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">nGENE</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <BuildLog>
+      <Path>$(IntDir)\$(MSBuildProjectName).log</Path>
+    </BuildLog>
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>..\Dependencies\FMOD\inc;..\Dependencies\Xerces\Include;..\Dependencies\PhysX\Foundation;..\Dependencies\PhysX\Physics;..\Dependencies\PhysX\PhysXLoader;..\Dependencies\PhysX\NxCharacter;..\Dependencies\PhysX\Cooking;..\Dependencies\FastDelegate;..\Dependencies\Ruby\lib\ruby\1.8\i386-mswin32;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ENGINE_BUILD;_DEBUG;_WIN32;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <SmallerTypeCheck>true</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <OpenMPSupport>false</OpenMPSupport>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeaders.h</PrecompiledHeaderFile>
+      <AssemblerOutput>
+      </AssemblerOutput>
+      <WarningLevel>Level4</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <Link>
+      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9d.lib;dinput8.lib;dxguid.lib;dxErr.lib;PhysXCore.lib;PhysXLoader.lib;PhysXCooking.lib;NxCharacter.lib;xerces-c_2D.lib;d3d10.lib;d3dx10.lib;lua51_d.lib;luabind_d.lib;fmodex_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)nGENE_d.dll</OutputFile>
+      <Version>0.1.6</Version>
+      <AdditionalLibraryDirectories>..\Dependencies\FMOD;..\Dependencies\Xerces\lib;..\Dependencies\PhysX;..\Dependencies\Ruby\lib;..\Dependencies\LuaBind\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMTD.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3dx10d_42.dll;d3d10d.dll;NxCharacter.dll;PhysXCooking.dll;PhysXLoader.dll;PhysXCore.dll;fmodex.dll;fmodexp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)nGENE_d.pdb</ProgramDatabaseFile>
+      <SubSystem>NotSet</SubSystem>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalIncludeDirectories>..\Dependencies\Xerces\Include;..\Dependencies\PhysX\Foundation;..\Dependencies\FMOD\inc;..\Dependencies\PhysX\Physics;..\Dependencies\PhysX\PhysXLoader;..\Dependencies\PhysX\NxCharacter;..\Dependencies\PhysX\Cooking;..\Dependencies\FastDelegate;..\Dependencies\Ruby\lib\ruby\1.8\i386-mswin32;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind\;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ENGINE_BUILD;_WIN32;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeaders.h</PrecompiledHeaderFile>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxguid.lib;dxErr.lib;PhysXLoader.lib;PhysXCooking.lib;PhysXCore.lib;NxCharacter.lib;xerces-c_2.lib;d3dx10.lib;d3d10.lib;lua51.lib;luabind.lib;fmodex_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)nGENE.dll</OutputFile>
+      <Version>0.1.6</Version>
+      <AdditionalLibraryDirectories>..\Dependencies\FMOD;..\Dependencies\Xerces\lib;..\Dependencies\PhysX;..\Dependencies\Ruby\lib;..\Dependencies\LuaBind\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3dx10_42.dll;d3d10.dll;NxCharacter.dll;PhysXCooking.dll;PhysXLoader.dll;PhysXCore.dll;fmodex.dll;fmodexp.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>NotSet</SubSystem>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalIncludeDirectories>..\Dependencies\Xerces\Include;..\Dependencies\PhysX\Foundation;..\Dependencies\PhysX\Physics;..\Dependencies\PhysX\PhysXLoader;..\Dependencies\PhysX\NxCharacter;..\Dependencies\PhysX\Cooking;..\Dependencies\FastDelegate;..\Dependencies\Ruby\lib\ruby\1.8\i386-mswin32;..\Dependencies\Lua\include;..\Dependencies\LuaBind\luabind\include;..\Dependencies\LuaBind\boost\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_ENGINE_BUILD;_WIN32;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>PrecompiledHeaders.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;dinput8.lib;dxguid.lib;dxErr.lib;PhysXLoader.lib;NxCooking.lib;NxCharacter.lib;xerces-c_2.lib;d3d10.lib;d3dx10.lib;msvcrt-ruby18.lib;lua51.lib;luabind.x86.release.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)nGENE.dll</OutputFile>
+      <Version>0.01</Version>
+      <AdditionalLibraryDirectories>..\Dependencies\Xerces\lib;..\Dependencies\PhysX;..\Dependencies\Ruby\lib;..\Dependencies\Lua;..\Dependencies\LuaBind\luabind;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>libc.lib;LIBCMT.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <DelayLoadDLLs>d3dx10_39.dll;d3d10.dll;lua51.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(OutDir)$(TargetName).lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="AlphaStage.cpp" />
+    <ClCompile Include="DeviceRender.cpp" />
+    <ClCompile Include="DeviceRenderDX10.cpp" />
+    <ClCompile Include="DeviceRenderDX9.cpp" />
+    <ClCompile Include="DX9Mapping.cpp" />
+    <ClCompile Include="GeometryStage.cpp" />
+    <ClCompile Include="IResourceDX9.cpp" />
+    <ClCompile Include="ITexture.cpp" />
+    <ClCompile Include="LightStage.cpp" />
+    <ClCompile Include="PostStage.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RendererDX10.cpp" />
+    <ClCompile Include="RendererDX9.cpp" />
+    <ClCompile Include="RendererEnumerator.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="RenderQueue.cpp" />
+    <ClCompile Include="RenderStage.cpp" />
+    <ClCompile Include="RenderTechnique.cpp" />
+    <ClCompile Include="ScreenOverlay.cpp" />
+    <ClCompile Include="ScreenOverlayBatched.cpp" />
+    <ClCompile Include="Surface.cpp" />
+    <ClCompile Include="TextureDX10.cpp" />
+    <ClCompile Include="TextureDX9.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="Billboard.cpp" />
+    <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NodeTerrain.cpp" />
+    <ClCompile Include="NodeVisible.cpp" />
+    <ClCompile Include="TerrainTile.cpp" />
+    <ClCompile Include="NodeLight.cpp" />
+    <ClCompile Include="MeshLoadPolicy3dsFile.cpp" />
+    <ClCompile Include="MeshLoadPolicyCollada.cpp" />
+    <ClCompile Include="MeshLoadPolicyXFile.cpp" />
+    <ClCompile Include="NodeMesh.cpp" />
+    <ClCompile Include="NodeParticleSystem.cpp" />
+    <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
+    <ClCompile Include="NodePrefab.cpp" />
+    <ClCompile Include="PrefabArrow.cpp" />
+    <ClCompile Include="PrefabAxisRods.cpp" />
+    <ClCompile Include="PrefabBox.cpp" />
+    <ClCompile Include="PrefabCapsule.cpp" />
+    <ClCompile Include="PrefabCylinder.cpp" />
+    <ClCompile Include="PrefabPlane.cpp" />
+    <ClCompile Include="PrefabPyramid.cpp" />
+    <ClCompile Include="PrefabSphere.cpp" />
+    <ClCompile Include="PrefabTeapot.cpp" />
+    <ClCompile Include="PrefabTorus.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Camera2D.cpp" />
+    <ClCompile Include="Camera3D.cpp" />
+    <ClCompile Include="CameraEnumerator.cpp" />
+    <ClCompile Include="CameraFirstPerson.cpp" />
+    <ClCompile Include="CameraThirdPerson.cpp" />
+    <ClCompile Include="Frustum.cpp" />
+    <ClCompile Include="Material.cpp" />
+    <ClCompile Include="MaterialLibrary.cpp" />
+    <ClCompile Include="MaterialManager.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderConstant.cpp" />
+    <ClCompile Include="ShaderDX10.cpp" />
+    <ClCompile Include="ShaderDX9.cpp" />
+    <ClCompile Include="ShaderInstance.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="StateManager.cpp" />
+    <ClCompile Include="TextureSampler.cpp" />
+    <ClCompile Include="IndexedBuffer.cpp" />
+    <ClCompile Include="IndexedBufferDX9.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
+    <ClCompile Include="VertexBufferDX9.cpp" />
+    <ClCompile Include="VertexBufferManager.cpp" />
+    <ClCompile Include="VertexDeclaration.cpp" />
+    <ClCompile Include="VertexDeclarationDX9.cpp" />
+    <ClCompile Include="AnimatedMeshLoadPolicyCollada.cpp" />
+    <ClCompile Include="AnimatedMeshLoadPolicyXFile.cpp" />
+    <ClCompile Include="AnimationCurve.cpp" />
+    <ClCompile Include="CatmullRomInterpolator.cpp" />
+    <ClCompile Include="IAnimationController.cpp" />
+    <ClCompile Include="KeyFrame.cpp" />
+    <ClCompile Include="KeyFrameAnimation.cpp" />
+    <ClCompile Include="KeyFrameAnimationSet.cpp" />
+    <ClCompile Include="LinearInterpolator.cpp" />
+    <ClCompile Include="QuaternionInterpolator.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="AABB.cpp" />
+    <ClCompile Include="BoundingVolume.cpp" />
+    <ClCompile Include="BrownianTree.cpp" />
+    <ClCompile Include="FastFloat.cpp" />
+    <ClCompile Include="Maths.cpp" />
+    <ClCompile Include="Matrix3x3.cpp" />
+    <ClCompile Include="Matrix4x4.cpp" />
+    <ClCompile Include="OBB.cpp" />
+    <ClCompile Include="Plane.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Quaternion.cpp" />
+    <ClCompile Include="Ray.cpp" />
+    <ClCompile Include="Vector2.cpp" />
+    <ClCompile Include="Vector3.cpp" />
+    <ClCompile Include="Vector4.cpp" />
+    <ClCompile Include="DeviceKeyboard.cpp" />
+    <ClCompile Include="DeviceKeyboardDX9.cpp" />
+    <ClCompile Include="DeviceMouse.cpp" />
+    <ClCompile Include="DeviceMouseDX9.cpp" />
+    <ClCompile Include="InputDevice.cpp" />
+    <ClCompile Include="InputDeviceEnumerator.cpp" />
+    <ClCompile Include="InputListener.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="InputSystemDX9.cpp" />
+    <ClCompile Include="BaseClass.cpp" />
+    <ClCompile Include="Colour.cpp" />
+    <ClCompile Include="DX10Mapping.cpp" />
+    <ClCompile Include="DynamicLibraryWin32.cpp" />
+    <ClCompile Include="FrameListener.cpp" />
+    <ClCompile Include="IDynamicLibrary.cpp" />
+    <ClCompile Include="Plugin.cpp" />
+    <ClCompile Include="PluginManager.cpp" />
+    <ClCompile Include="PrecompiledHeaders.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TypeInfo.cpp" />
+    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WindowWin32.cpp" />
+    <ClCompile Include="DefaultFileArchive.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="FileArchive.cpp" />
+    <ClCompile Include="FileArchiveEntry.cpp" />
+    <ClCompile Include="FileArchiveEnumerator.cpp" />
+    <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="FileNarrow.cpp" />
+    <ClCompile Include="IFile.cpp" />
+    <ClCompile Include="ISerializable.cpp" />
+    <ClCompile Include="ISerializer.cpp" />
+    <ClCompile Include="XMLDocument.cpp" />
+    <ClCompile Include="XMLNode.cpp" />
+    <ClCompile Include="XMLParser.cpp" />
+    <ClCompile Include="XMLSerializer.cpp" />
+    <ClCompile Include="TimeDate.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="CPUInfo.cpp" />
+    <ClCompile Include="EngineUpdateListener.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
+    <ClCompile Include="Profiler.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="LogConsole.cpp" />
+    <ClCompile Include="LogListener.cpp" />
+    <ClCompile Include="LogText.cpp" />
+    <ClCompile Include="LogXML.cpp" />
+    <ClCompile Include="Task.cpp" />
+    <ClCompile Include="TaskManager.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="WorkerThread.cpp" />
+    <ClCompile Include="BWTEncoder.cpp" />
+    <ClCompile Include="HuffmanEncoder.cpp" />
+    <ClCompile Include="MTFEncoder.cpp" />
+    <ClCompile Include="RLEEncoder.cpp" />
+    <ClCompile Include="CharacterController.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="PhysicsCollisionListener.cpp" />
+    <ClCompile Include="PhysicsMaterial.cpp" />
+    <ClCompile Include="PhysicsTriggerListener.cpp" />
+    <ClCompile Include="PhysicsWorld.cpp" />
+    <ClCompile Include="PhysXAllocator.cpp" />
+    <ClCompile Include="PhysXMapping.cpp" />
+    <ClCompile Include="PhysXStream.cpp" />
+    <ClCompile Include="Vehicle.cpp" />
+    <ClCompile Include="ForceField.cpp" />
+    <ClCompile Include="ForceFieldShape.cpp" />
+    <ClCompile Include="ForceFieldShapeBox.cpp" />
+    <ClCompile Include="ForceFieldShapeCapsule.cpp" />
+    <ClCompile Include="ForceFieldShapeEnumerator.cpp" />
+    <ClCompile Include="ForceFieldShapesGroup.cpp" />
+    <ClCompile Include="ForceFieldShapeSphere.cpp" />
+    <ClCompile Include="Joint.cpp" />
+    <ClCompile Include="JointCylinder.cpp" />
+    <ClCompile Include="JointDistance.cpp" />
+    <ClCompile Include="JointEnumerator.cpp" />
+    <ClCompile Include="JointFixed.cpp" />
+    <ClCompile Include="JointHinge.cpp" />
+    <ClCompile Include="JointPointInPlane.cpp" />
+    <ClCompile Include="JointPointOnLine.cpp" />
+    <ClCompile Include="JointPrism.cpp" />
+    <ClCompile Include="JointPulley.cpp" />
+    <ClCompile Include="JointSphere.cpp" />
+    <ClCompile Include="PhysicsActor.cpp" />
+    <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="ShapeBox.cpp" />
+    <ClCompile Include="ShapeCapsule.cpp" />
+    <ClCompile Include="ShapeEnumerator.cpp" />
+    <ClCompile Include="ShapeMesh.cpp" />
+    <ClCompile Include="ShapePlane.cpp" />
+    <ClCompile Include="ShapeSphere.cpp" />
+    <ClCompile Include="ShapeTerrain.cpp" />
+    <ClCompile Include="AIManager.cpp" />
+    <ClCompile Include="World.cpp" />
+    <ClCompile Include="ScriptLua.cpp" />
+    <ClCompile Include="ScriptLuaLib.cpp" />
+    <ClCompile Include="ScriptRuby.cpp" />
+    <ClCompile Include="ScriptSystemLua.cpp" />
+    <ClCompile Include="ShaderSemanticFunctionLua.cpp" />
+    <ClCompile Include="ICullable.cpp" />
+    <ClCompile Include="IPickable.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="SceneManagerFactory.cpp" />
+    <ClCompile Include="ScenePartitioner.cpp" />
+    <ClCompile Include="ScenePartitionerOctTree.cpp" />
+    <ClCompile Include="ScenePartitionerQuadTree.cpp" />
+    <ClCompile Include="GUIButton.cpp" />
+    <ClCompile Include="GUICheckBox.cpp" />
+    <ClCompile Include="GUIComboBox.cpp" />
+    <ClCompile Include="GUIControl.cpp" />
+    <ClCompile Include="GUIControlContainer.cpp" />
+    <ClCompile Include="GUICursor.cpp" />
+    <ClCompile Include="GUIFont.cpp" />
+    <ClCompile Include="GUIGroupBox.cpp" />
+    <ClCompile Include="GUIImage.cpp" />
+    <ClCompile Include="GUIListBox.cpp" />
+    <ClCompile Include="GUIManager.cpp" />
+    <ClCompile Include="GUIProgressBar.cpp" />
+    <ClCompile Include="GUIPromptWindow.cpp" />
+    <ClCompile Include="GUIRadioButton.cpp" />
+    <ClCompile Include="GUIScrollbar.cpp" />
+    <ClCompile Include="GUISlider.cpp" />
+    <ClCompile Include="GUIStage.cpp" />
+    <ClCompile Include="GUIStatic.cpp" />
+    <ClCompile Include="GUITextField.cpp" />
+    <ClCompile Include="GUIWindow.cpp" />
+    <ClCompile Include="FMODSound.cpp" />
+    <ClCompile Include="FMODSoundManager.cpp" />
+    <ClCompile Include="ISound.cpp" />
+    <ClCompile Include="NodeSound.cpp" />
+    <ClCompile Include="SoundManagerEnumerator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="BaseClass.h" />
+    <ClInclude Include="Colour.h" />
+    <ClInclude Include="DX10Mapping.h" />
+    <ClInclude Include="DX9Mapping.h" />
+    <ClInclude Include="DynamicLibraryWin32.h" />
+    <ClInclude Include="Export.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="FuncFilterBox.h" />
+    <ClInclude Include="FuncSplit.h" />
+    <ClInclude Include="HashTable.h" />
+    <ClInclude Include="IDynamicLibrary.h" />
+    <ClInclude Include="Listener.h" />
+    <ClInclude Include="ListenerRegistry.h" />
+    <ClInclude Include="Macros.h" />
+    <ClInclude Include="nGENE.h" />
+    <ClInclude Include="Plugin.h" />
+    <ClInclude Include="PluginManager.h" />
+    <ClInclude Include="PrecompiledHeaders.h" />
+    <ClInclude Include="Prerequisities.h" />
+    <ClInclude Include="PrerequisitiesPhysX.h" />
+    <ClInclude Include="Singleton.h" />
+    <ClInclude Include="StringFunc.h" />
+    <ClInclude Include="Tree.h" />
+    <ClInclude Include="TypeInfo.h" />
+    <ClInclude Include="UtilitiesTypes.h" />
+    <ClInclude Include="Window.h" />
+    <ClInclude Include="WindowWin32.h" />
+    <ClInclude Include="DefaultFileArchive.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="FileArchive.h" />
+    <ClInclude Include="FileArchiveEntry.h" />
+    <ClInclude Include="FileArchiveEnumerator.h" />
+    <ClInclude Include="FileArchiveFactory.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FileNarrow.h" />
+    <ClInclude Include="IFile.h" />
+    <ClInclude Include="ISerializable.h" />
+    <ClInclude Include="ISerializer.h" />
+    <ClInclude Include="SerializableProperty.h" />
+    <ClInclude Include="XMLDocument.h" />
+    <ClInclude Include="XMLNode.h" />
+    <ClInclude Include="XMLParser.h" />
+    <ClInclude Include="XMLSerializer.h" />
+    <ClInclude Include="TimeDate.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="Assertion.h" />
+    <ClInclude Include="AutoPointer.h" />
+    <ClInclude Include="CPUInfo.h" />
+    <ClInclude Include="EngineUpdateListener.h" />
+    <ClInclude Include="MemoryManager.h" />
+    <ClInclude Include="Profiler.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="LogConsole.h" />
+    <ClInclude Include="LogListener.h" />
+    <ClInclude Include="LogText.h" />
+    <ClInclude Include="LogXML.h" />
+    <ClInclude Include="Task.h" />
+    <ClInclude Include="TaskManager.h" />
+    <ClInclude Include="Thread.h" />
+    <ClInclude Include="WorkerThread.h" />
+    <ClInclude Include="BWTEncoder.h" />
+    <ClInclude Include="HuffmanEncoder.h" />
+    <ClInclude Include="IEncoder.h" />
+    <ClInclude Include="MTFEncoder.h" />
+    <ClInclude Include="RLEEncoder.h" />
+    <ClInclude Include="AlphaStage.h" />
+    <ClInclude Include="DeviceRender.h" />
+    <ClInclude Include="DeviceRenderDX10.h" />
+    <ClInclude Include="DeviceRenderDX9.h" />
+    <ClInclude Include="DeviceRenderTypes.h" />
+    <ClInclude Include="FrameListener.h" />
+    <ClInclude Include="GeometryStage.h" />
+    <ClInclude Include="IRenderable.h" />
+    <ClInclude Include="IResourceDX9.h" />
+    <ClInclude Include="ITexture.h" />
+    <ClInclude Include="LightStage.h" />
+    <ClInclude Include="PostStage.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RendererDX10.h" />
+    <ClInclude Include="RendererDX9.h" />
+    <ClInclude Include="RendererEnumerator.h" />
+    <ClInclude Include="RendererTypes.h" />
+    <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="RenderQueue.h" />
+    <ClInclude Include="RenderStage.h" />
+    <ClInclude Include="RenderTechnique.h" />
+    <ClInclude Include="ScreenOverlay.h" />
+    <ClInclude Include="ScreenOverlayBatched.h" />
+    <ClInclude Include="Surface.h" />
+    <ClInclude Include="TextureDX10.h" />
+    <ClInclude Include="TextureDX9.h" />
+    <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="TextureTypes.h" />
+    <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Billboard.h" />
+    <ClInclude Include="Node.h" />
+    <ClInclude Include="NodeDebugPath.h" />
+    <ClInclude Include="NodeTerrain.h" />
+    <ClInclude Include="NodeVisible.h" />
+    <ClInclude Include="TerrainTile.h" />
+    <ClInclude Include="TerrainTypes.h" />
+    <ClInclude Include="NodeLight.h" />
+    <ClInclude Include="MeshLoadPolicy3dsFile.h" />
+    <ClInclude Include="MeshLoadPolicyCollada.h" />
+    <ClInclude Include="MeshLoadPolicyXFile.h" />
+    <ClInclude Include="NodeMesh.h" />
+    <ClInclude Include="NodeParticleSystem.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleEmitter.h" />
+    <ClInclude Include="NodePrefab.h" />
+    <ClInclude Include="PrefabArrow.h" />
+    <ClInclude Include="PrefabAxisRods.h" />
+    <ClInclude Include="PrefabBox.h" />
+    <ClInclude Include="PrefabCapsule.h" />
+    <ClInclude Include="PrefabCylinder.h" />
+    <ClInclude Include="PrefabPlane.h" />
+    <ClInclude Include="PrefabPyramid.h" />
+    <ClInclude Include="PrefabSphere.h" />
+    <ClInclude Include="PrefabTeapot.h" />
+    <ClInclude Include="PrefabTorus.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Camera2D.h" />
+    <ClInclude Include="Camera3D.h" />
+    <ClInclude Include="CameraEnumerator.h" />
+    <ClInclude Include="CameraFactory.h" />
+    <ClInclude Include="CameraFirstPerson.h" />
+    <ClInclude Include="CameraThirdPerson.h" />
+    <ClInclude Include="Frustum.h" />
+    <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialLibrary.h" />
+    <ClInclude Include="MaterialManager.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderConstant.h" />
+    <ClInclude Include="ShaderConstantTypes.h" />
+    <ClInclude Include="ShaderDX10.h" />
+    <ClInclude Include="ShaderDX9.h" />
+    <ClInclude Include="ShaderInstance.h" />
+    <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="ShaderTypes.h" />
+    <ClInclude Include="StateManager.h" />
+    <ClInclude Include="TextureSampler.h" />
+    <ClInclude Include="IndexedBuffer.h" />
+    <ClInclude Include="IndexedBufferDX9.h" />
+    <ClInclude Include="VertexBuffer.h" />
+    <ClInclude Include="VertexBufferDX9.h" />
+    <ClInclude Include="VertexBufferManager.h" />
+    <ClInclude Include="VertexBufferTypes.h" />
+    <ClInclude Include="VertexDeclaration.h" />
+    <ClInclude Include="VertexDeclarationDX9.h" />
+    <ClInclude Include="AnimatedMeshLoadPolicyCollada.h" />
+    <ClInclude Include="AnimatedMeshLoadPolicyXFile.h" />
+    <ClInclude Include="AnimationCurve.h" />
+    <ClInclude Include="CatmullRomInterpolator.h" />
+    <ClInclude Include="IAnimationController.h" />
+    <ClInclude Include="IInterpolator.h" />
+    <ClInclude Include="InterpolatedController.h" />
+    <ClInclude Include="KeyFrame.h" />
+    <ClInclude Include="KeyFrameAnimation.h" />
+    <ClInclude Include="KeyFrameAnimationSet.h" />
+    <ClInclude Include="LinearInterpolator.h" />
+    <ClInclude Include="OrientationController.h" />
+    <ClInclude Include="PositionController.h" />
+    <ClInclude Include="QuaternionInterpolator.h" />
+    <ClInclude Include="ScaleController.h" />
+    <ClInclude Include="SkeletalAnimationController.h" />
+    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="AABB.h" />
+    <ClInclude Include="BoundingVolume.h" />
+    <ClInclude Include="BrownianTree.h" />
+    <ClInclude Include="FastFloat.h" />
+    <ClInclude Include="Maths.h" />
+    <ClInclude Include="Matrix3x3.h" />
+    <ClInclude Include="Matrix4x4.h" />
+    <ClInclude Include="OBB.h" />
+    <ClInclude Include="PerlinNoise.h" />
+    <ClInclude Include="Plane.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Ray.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
+    <ClInclude Include="DeviceKeyboard.h" />
+    <ClInclude Include="DeviceKeyboardDX9.h" />
+    <ClInclude Include="DeviceMouse.h" />
+    <ClInclude Include="DeviceMouseDX9.h" />
+    <ClInclude Include="InputDevice.h" />
+    <ClInclude Include="InputDeviceEnumerator.h" />
+    <ClInclude Include="InputListener.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="InputSystemDX9.h" />
+    <ClInclude Include="CharacterController.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="PhysicsCollisionListener.h" />
+    <ClInclude Include="PhysicsMaterial.h" />
+    <ClInclude Include="PhysicsTriggerListener.h" />
+    <ClInclude Include="PhysicsWorld.h" />
+    <ClInclude Include="PhysXAllocator.h" />
+    <ClInclude Include="PhysXMapping.h" />
+    <ClInclude Include="PhysXStream.h" />
+    <ClInclude Include="TriggerListener.h" />
+    <ClInclude Include="Vehicle.h" />
+    <ClInclude Include="ForceField.h" />
+    <ClInclude Include="ForceFieldShape.h" />
+    <ClInclude Include="ForceFieldShapeBox.h" />
+    <ClInclude Include="ForceFieldShapeCapsule.h" />
+    <ClInclude Include="ForceFieldShapeEnumerator.h" />
+    <ClInclude Include="ForceFieldShapeFactory.h" />
+    <ClInclude Include="ForceFieldShapesGroup.h" />
+    <ClInclude Include="ForceFieldShapeSphere.h" />
+    <ClInclude Include="ForceFieldTypes.h" />
+    <ClInclude Include="Joint.h" />
+    <ClInclude Include="JointCylinder.h" />
+    <ClInclude Include="JointDistance.h" />
+    <ClInclude Include="JointEnumerator.h" />
+    <ClInclude Include="JointFactory.h" />
+    <ClInclude Include="JointFixed.h" />
+    <ClInclude Include="JointHinge.h" />
+    <ClInclude Include="JointPointInPlane.h" />
+    <ClInclude Include="JointPointOnLine.h" />
+    <ClInclude Include="JointPrism.h" />
+    <ClInclude Include="JointPulley.h" />
+    <ClInclude Include="JointSphere.h" />
+    <ClInclude Include="CollisionListener.h" />
+    <ClInclude Include="PhysicsActor.h" />
+    <ClInclude Include="Shape.h" />
+    <ClInclude Include="ShapeBox.h" />
+    <ClInclude Include="ShapeCapsule.h" />
+    <ClInclude Include="ShapeEnumerator.h" />
+    <ClInclude Include="ShapeFactory.h" />
+    <ClInclude Include="ShapeMesh.h" />
+    <ClInclude Include="ShapePlane.h" />
+    <ClInclude Include="ShapeSphere.h" />
+    <ClInclude Include="ShapeTerrain.h" />
+    <ClInclude Include="AIManager.h" />
+    <ClInclude Include="World.h" />
+    <ClInclude Include="ScriptLua.h" />
+    <ClInclude Include="ScriptLuaLib.h" />
+    <ClInclude Include="ScriptRuby.h" />
+    <ClInclude Include="ScriptSystemLua.h" />
+    <ClInclude Include="ShaderSemanticFunctionLua.h" />
+    <ClInclude Include="ICullable.h" />
+    <ClInclude Include="IPickable.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="SceneManagerFactory.h" />
+    <ClInclude Include="ScenePartitioner.h" />
+    <ClInclude Include="ScenePartitionerOctTree.h" />
+    <ClInclude Include="ScenePartitionerQuadTree.h" />
+    <ClInclude Include="GUIButton.h" />
+    <ClInclude Include="GUICheckBox.h" />
+    <ClInclude Include="GUIComboBox.h" />
+    <ClInclude Include="GUIControl.h" />
+    <ClInclude Include="GUIControlContainer.h" />
+    <ClInclude Include="GUICursor.h" />
+    <ClInclude Include="GUIFont.h" />
+    <ClInclude Include="GUIGroupBox.h" />
+    <ClInclude Include="GUIImage.h" />
+    <ClInclude Include="GUIListBox.h" />
+    <ClInclude Include="GUIManager.h" />
+    <ClInclude Include="GUIProgressBar.h" />
+    <ClInclude Include="GUIPromptWindow.h" />
+    <ClInclude Include="GUIRadioButton.h" />
+    <ClInclude Include="GUIScrollbar.h" />
+    <ClInclude Include="GUISlider.h" />
+    <ClInclude Include="GUIStage.h" />
+    <ClInclude Include="GUIStatic.h" />
+    <ClInclude Include="GUIText.h" />
+    <ClInclude Include="GUITextField.h" />
+    <ClInclude Include="GUIWindow.h" />
+    <ClInclude Include="FMODSound.h" />
+    <ClInclude Include="FMODSoundManager.h" />
+    <ClInclude Include="ISound.h" />
+    <ClInclude Include="ISoundManager.h" />
+    <ClInclude Include="NodeSound.h" />
+    <ClInclude Include="SoundManagerEnumerator.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
